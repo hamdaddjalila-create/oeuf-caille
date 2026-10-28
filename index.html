@@ -203,7 +203,6 @@
     <div id="modal-client" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
             <h3 id="client-modal-title" class="text-lg font-bold text-slate-800">إضافة محل تجاري جديد</h3>
-            <input type="hidden" id="client-edit-id">
             <input type="text" id="client-name" placeholder="اسم المحل التجاري" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
             <input type="text" id="client-manager" placeholder="اسم المسؤول" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
             <input type="text" id="client-phone" placeholder="رقم الهاتف" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
@@ -219,7 +218,6 @@
     <div id="modal-product" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
             <h3 id="prod-modal-title" class="text-lg font-bold text-slate-800">إضافة منتج جديد</h3>
-            <input type="hidden" id="prod-edit-id">
             <input type="text" id="prod-name" placeholder="اسم المنتج" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
             <input type="number" id="prod-purchase" placeholder="سعر الشراء (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
             <input type="number" id="prod-sell" placeholder="سعر البيع للمحلات (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
@@ -260,7 +258,6 @@
     <div id="modal-return" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
             <h3 class="text-lg font-bold text-slate-800">تسجيل سلعة تالفة أو مرتجعة</h3>
-            <input type="hidden" id="return-edit-id">
             <select id="return-client" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500 bg-white">
                 <option value="">اختر المحل...</option>
             </select>
@@ -302,35 +299,41 @@
             return now.toISOString().split('T')[0] + ' ' + now.toTimeString().split(' ')[0];
         }
 
-        // Real-time Firebase listeners
         onSnapshot(collection(db, "clients"), (snap) => {
             clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderClients(); renderDashboard(); populateSelects();
-        });
+        }, (err) => console.error(err));
+
         onSnapshot(collection(db, "products"), (snap) => {
             products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderProducts(); populateSelects();
-        });
+        }, (err) => console.error(err));
+
         onSnapshot(collection(db, "stock"), (snap) => {
             stock = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderStock();
-        });
+        }, (err) => console.error(err));
+
         onSnapshot(collection(db, "orders"), (snap) => {
             orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderOrders(); renderDashboard();
-        });
+        }, (err) => console.error(err));
+
         onSnapshot(collection(db, "returns"), (snap) => {
             returnsList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderReturns(); renderDashboard();
-        });
+        }, (err) => console.error(err));
 
         window.switchTab = function(tabId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById('view-' + tabId).classList.remove('hidden');
+            const target = document.getElementById('view-' + tabId);
+            if(target) target.classList.remove('hidden');
+
             document.querySelectorAll('aside nav button').forEach(btn => {
                 btn.className = "w-full text-left px-4 py-2.5 rounded-xl font-medium transition text-slate-300 hover:bg-slate-800";
             });
-            document.getElementById('nav-' + tabId).className = "w-full text-left px-4 py-2.5 rounded-xl font-medium transition bg-amber-600 text-white";
+            const navBtn = document.getElementById('nav-' + tabId);
+            if(navBtn) navBtn.className = "w-full text-left px-4 py-2.5 rounded-xl font-medium transition bg-amber-600 text-white";
             
             const titles = {
                 'dashboard': 'لوحة التحكم العامة - Oeuf Caille',
@@ -340,76 +343,115 @@
                 'orders': 'سجل الوصولات وترتيبها',
                 'returns': 'سجل المرتجعات والتالف'
             };
-            document.getElementById('page-title').innerText = titles[tabId];
+            const titleEl = document.getElementById('page-title');
+            if(titleEl) titleEl.innerText = titles[tabId] || '';
         }
 
         window.openModal = function(name) {
-            document.getElementById('modal-' + name).classList.remove('hidden');
-            document.getElementById('modal-' + name).classList.add('flex');
+            const modal = document.getElementById('modal-' + name);
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
             if(name === 'order') {
-                document.getElementById('order-items-container').innerHTML = "";
+                const container = document.getElementById('order-items-container');
+                if(container) container.innerHTML = "";
                 addOrderItemRow();
             }
         }
+
         window.closeModal = function(name) {
-            document.getElementById('modal-' + name).classList.remove('flex');
-            document.getElementById('modal-' + name).classList.add('hidden');
+            const modal = document.getElementById('modal-' + name);
+            if(modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+            if(name === 'client') {
+                editingClientId = null;
+                document.getElementById('client-name').value = '';
+                document.getElementById('client-manager').value = '';
+                document.getElementById('client-phone').value = '';
+                document.getElementById('client-address').value = '';
+            }
+            if(name === 'product') {
+                editingProdId = null;
+                document.getElementById('prod-name').value = '';
+                document.getElementById('prod-purchase').value = '';
+                document.getElementById('prod-sell').value = '';
+            }
+            if(name === 'return') {
+                editingReturnId = null;
+                document.getElementById('return-qty').value = '';
+                document.getElementById('return-reason').value = '';
+            }
         }
 
         function populateSelects() {
             let clientOpts = '<option value="">اختر المحل التجاري...</option>' + clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-            document.getElementById('order-client').innerHTML = clientOpts;
-            document.getElementById('return-client').innerHTML = clientOpts;
+            const oClient = document.getElementById('order-client');
+            const rClient = document.getElementById('return-client');
+            if(oClient) oClient.innerHTML = clientOpts;
+            if(rClient) rClient.innerHTML = clientOpts;
 
             let prodOpts = '<option value="">اختر المنتج...</option>' + products.map(p => `<option value="${p.name}" data-price="${p.sellPrice}">${p.name}</option>`).join('');
-            document.getElementById('return-product').innerHTML = prodOpts;
+            const rProd = document.getElementById('return-product');
+            if(rProd) rProd.innerHTML = prodOpts;
         }
 
         function renderDashboard() {
-            document.getElementById('stat-clients').innerText = clients.length;
-            document.getElementById('stat-orders').innerText = orders.length;
+            const sc = document.getElementById('stat-clients');
+            const so = document.getElementById('stat-orders');
+            const sr = document.getElementById('stat-revenue');
+            const sret = document.getElementById('stat-returns');
+
+            if(sc) sc.innerText = clients.length;
+            if(so) so.innerText = orders.length;
             let rev = orders.reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0);
-            document.getElementById('stat-revenue').innerText = rev + ' DZD';
+            if(sr) sr.innerText = rev + ' DZD';
             let retCount = returnsList.reduce((sum, r) => sum + (Number(r.qty) || 0), 0);
-            document.getElementById('stat-returns').innerText = retCount + ' وحدة';
+            if(sret) sret.innerText = retCount + ' وحدة';
         }
 
         function renderClients() {
-            let html = clients.map(c => `
+            const tbody = document.getElementById('clients-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = clients.map(c => `
                 <tr>
                     <td class="p-4 font-semibold text-slate-800">${c.name}</td>
                     <td class="p-4 text-slate-600">${c.manager || ''}</td>
                     <td class="p-4 text-slate-600 font-mono">${c.phone || ''}</td>
                     <td class="p-4 text-slate-500">${c.address || ''}</td>
-                    <td class="p-4 text-slate-400 text-xs font-mono">${c.createdAt}</td>
+                    <td class="p-4 text-slate-400 text-xs font-mono">${c.createdAt || ''}</td>
                     <td class="p-4 text-center space-x-2">
                         <button onclick="editClient('${c.id}', '${c.name}', '${c.manager || ''}', '${c.phone || ''}', '${c.address || ''}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">✏️ تعديل</button>
                         <button onclick="deleteClient('${c.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
                     </td>
                 </tr>
             `).join('');
-            document.getElementById('clients-table-body').innerHTML = html;
         }
 
         function renderProducts() {
-            let html = products.map(p => `
+            const tbody = document.getElementById('products-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = products.map(p => `
                 <tr>
                     <td class="p-4 font-semibold text-slate-800">${p.name}</td>
                     <td class="p-4 text-slate-600 font-mono">${p.purchasePrice} DZD</td>
                     <td class="p-4 text-emerald-600 font-bold font-mono">${p.sellPrice} DZD</td>
-                    <td class="p-4 text-slate-400 text-xs font-mono">${p.createdAt}</td>
+                    <td class="p-4 text-slate-400 text-xs font-mono">${p.createdAt || ''}</td>
                     <td class="p-4 text-center space-x-2">
                         <button onclick="editProduct('${p.id}', '${p.name}', '${p.purchasePrice}', '${p.sellPrice}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">✏️ تعديل</button>
                         <button onclick="deleteProduct('${p.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
                     </td>
                 </tr>
             `).join('');
-            document.getElementById('products-table-body').innerHTML = html;
         }
 
         function renderStock() {
-            let html = stock.map(item => {
-                let isAlert = item.quantity <= item.alertLimit;
+            const grid = document.getElementById('stock-grid');
+            if(!grid) return;
+            grid.innerHTML = stock.map(item => {
+                let isAlert = Number(item.quantity) <= Number(item.alertLimit);
                 let cardClass = isAlert 
                     ? "bg-red-50 border-2 border-red-400 p-6 rounded-2xl shadow-sm space-y-4 transition animate-pulse" 
                     : "bg-white border p-6 rounded-2xl shadow-sm space-y-4 transition";
@@ -419,7 +461,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <h4 class="font-bold text-lg text-slate-800">${item.name}</h4>
-                                <span class="text-[11px] text-slate-400 font-mono">آخر تحديث: ${item.updatedAt}</span>
+                                <span class="text-[11px] text-slate-400 font-mono">آخر تحديث: ${item.updatedAt || ''}</span>
                             </div>
                             <span class="text-2xl">📦</span>
                         </div>
@@ -439,20 +481,21 @@
                     </div>
                 `;
             }).join('');
-            document.getElementById('stock-grid').innerHTML = html;
         }
 
         function renderOrders() {
-            let sorted = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            let html = sorted.map(o => {
-                let itemsStr = o.items.map(i => `<div class="text-xs">▪️ ${i.product} (الكمية: ${i.qty} - السعر: ${i.price} DZD)</div>`).join('');
+            const tbody = document.getElementById('orders-table-body');
+            if(!tbody) return;
+            let sorted = [...orders].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            tbody.innerHTML = sorted.map(o => {
+                let itemsStr = (o.items || []).map(i => `<div class="text-xs">▪️ ${i.product} (الكمية: ${i.qty} - السعر: ${i.price} DZD)</div>`).join('');
                 return `
                     <tr>
                         <td class="p-4 font-mono font-bold text-amber-600">#BL-${o.displayId || o.id}</td>
-                        <td class="p-4 text-slate-500 font-mono text-xs">${o.createdAt}</td>
-                        <td class="p-4 font-semibold text-slate-800">${o.clientName}</td>
+                        <td class="p-4 text-slate-500 font-mono text-xs">${o.createdAt || ''}</td>
+                        <td class="p-4 font-semibold text-slate-800">${o.clientName || ''}</td>
                         <td class="p-4 text-slate-600">${itemsStr}</td>
-                        <td class="p-4 text-emerald-600 font-bold">${o.totalPrice} DZD</td>
+                        <td class="p-4 text-emerald-600 font-bold">${o.totalPrice || 0} DZD</td>
                         <td class="p-4 text-center space-x-2">
                             <button onclick='printInvoice(${JSON.stringify(o)})' class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">🖨️ طباعة</button>
                             <button onclick="deleteOrder('${o.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
@@ -460,24 +503,24 @@
                     </tr>
                 `;
             }).join('');
-            document.getElementById('orders-table-body').innerHTML = html;
         }
 
         function renderReturns() {
-            let html = returnsList.map(r => `
+            const tbody = document.getElementById('returns-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = returnsList.map(r => `
                 <tr>
-                    <td class="p-4 text-slate-500 font-mono text-xs">${r.createdAt}</td>
-                    <td class="p-4 font-semibold text-slate-800">${r.clientName}</td>
-                    <td class="p-4 text-red-600 font-bold">${r.product}</td>
-                    <td class="p-4 text-slate-800 font-bold">${r.qty}</td>
+                    <td class="p-4 text-slate-500 font-mono text-xs">${r.createdAt || ''}</td>
+                    <td class="p-4 font-semibold text-slate-800">${r.clientName || ''}</td>
+                    <td class="p-4 text-red-600 font-bold">${r.product || ''}</td>
+                    <td class="p-4 text-slate-800 font-bold">${r.qty || 0}</td>
                     <td class="p-4 text-slate-500">${r.reason || ''}</td>
                     <td class="p-4 text-center space-x-2">
-                        <button onclick="editReturn('${r.id}', '${r.clientName}', '${r.product}', '${r.qty}', '${r.reason || ''}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">✏️ تعديل</button>
+                        <button onclick="editReturn('${r.id}', '${r.clientName || ''}', '${r.product || ''}', '${r.qty || 0}', '${r.reason || ''}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">✏️ تعديل</button>
                         <button onclick="deleteReturn('${r.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
                     </td>
                 </tr>
             `).join('');
-            document.getElementById('returns-table-body').innerHTML = html;
         }
 
         window.saveClient = async function() {
@@ -545,16 +588,20 @@
             await updateDoc(doc(db, "stock", id), { alertLimit: Number(limit) });
         }
         window.addStockQty = async function(id, currentQty) {
-            let add = Number(document.getElementById('add-qty-' + id).value);
+            let inputField = document.getElementById('add-qty-' + id);
+            if(!inputField) return;
+            let add = Number(inputField.value);
             if(!add || add <= 0) return;
             await updateDoc(doc(db, "stock", id), {
                 quantity: Number(currentQty) + add,
                 updatedAt: getDateTime()
             });
+            inputField.value = '';
         }
 
         window.addOrderItemRow = function() {
             let container = document.getElementById('order-items-container');
+            if(!container) return;
             let prodOpts = '<option value="">اختر المنتج...</option>' + products.map(p => `<option value="${p.name}" data-price="${p.sellPrice}">${p.name}</option>`).join('');
             let row = document.createElement('div');
             row.className = "flex gap-2 items-center bg-slate-50 p-3 rounded-xl border order-item-row";
@@ -581,7 +628,8 @@
                 let price = Number(row.querySelector('.item-price').value) || 0;
                 total += qty * price;
             });
-            document.getElementById('order-total-display').innerText = total + ' DZD';
+            const totalDisplay = document.getElementById('order-total-display');
+            if(totalDisplay) totalDisplay.innerText = total + ' DZD';
         }
 
         window.saveOrder = async function(shouldPrint) {
@@ -599,7 +647,7 @@
             let displayId = Math.floor(100 + Math.random() * 900);
             
             let orderData = { displayId, clientName, items, totalPrice, createdAt: getDateTime() };
-            let docRef = await addDoc(collection(db, "orders"), orderData);
+            await addDoc(collection(db, "orders"), orderData);
             closeModal('order');
 
             if(shouldPrint) {
@@ -607,13 +655,12 @@
             }
         }
 
-        // تم إصلاح دالة حذف الوصل بالاعتماد على معرف مستند Firebase الفعلي
         window.deleteOrder = async function(docId) {
             if(confirm('هل تريد حذف هذا الوصل نهائياً؟')) {
                 try {
                     await deleteDoc(doc(db, "orders", docId));
                 } catch(e) {
-                    alert("حدث خطأ أثناء الحذف: " + e.message);
+                    alert("خطأ في الحذف: " + e.message);
                 }
             }
         }
@@ -651,7 +698,7 @@
 
         window.printInvoice = function(order) {
             let printWindow = window.open('', '_blank', 'width=800,height=600');
-            let itemsHtml = order.items.map(i => `
+            let itemsHtml = (order.items || []).map(i => `
                 <tr>
                     <td><b>${i.product}</b></td>
                     <td><b>${i.qty}</b></td>
@@ -686,8 +733,8 @@
                     </div>
                     <div class="info-box">
                         <div>رقم الوصل: #${order.displayId || order.id}</div>
-                        <div>التاريخ والوقت: ${order.createdAt}</div>
-                        <div>المحل التجاري: ${order.clientName}</div>
+                        <div>التاريخ والوقت: ${order.createdAt || ''}</div>
+                        <div>المحل التجاري: ${order.clientName || ''}</div>
                     </div>
                     <table>
                         <thead>
@@ -695,7 +742,7 @@
                         </thead>
                         <tbody>${itemsHtml}</tbody>
                     </table>
-                    <div class="total">المبلغ الإجمالي المستحق: ${order.totalPrice} DZD</div>
+                    <div class="total">المبلغ الإجمالي المستحق: ${order.totalPrice || 0} DZD</div>
                     <div class="footer">توقيع واستلام المحل التجاري</div>
                     <script>window.onload = function() { window.print(); }</script>
                 </body>
