@@ -250,7 +250,8 @@
             </div>
             <div class="flex justify-end gap-2 pt-2">
                 <button onclick="closeModal('order')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
-                <button onclick="saveOrder()" class="bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ الوصل</button>
+                <button onclick="saveOrder(false)" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ الوصل فقط</button>
+                <button onclick="saveOrder(true)" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">🖨️ حفظ وطباعة الوصل</button>
             </div>
         </div>
     </div>
@@ -353,9 +354,6 @@
         window.closeModal = function(name) {
             document.getElementById('modal-' + name).classList.remove('flex');
             document.getElementById('modal-' + name).classList.add('hidden');
-            if(name === 'client') { editingClientId = null; document.getElementById('client-name').value = ''; document.getElementById('client-manager').value = ''; document.getElementById('client-phone').value = ''; document.getElementById('client-address').value = ''; }
-            if(name === 'product') { editingProdId = null; document.getElementById('prod-name').value = ''; document.getElementById('prod-purchase').value = ''; document.getElementById('prod-sell').value = ''; }
-            if(name === 'return') { editingReturnId = null; document.getElementById('return-qty').value = ''; document.getElementById('return-reason').value = ''; }
         }
 
         function populateSelects() {
@@ -367,7 +365,6 @@
             document.getElementById('return-product').innerHTML = prodOpts;
         }
 
-        // Renders
         function renderDashboard() {
             document.getElementById('stat-clients').innerText = clients.length;
             document.getElementById('stat-orders').innerText = orders.length;
@@ -413,7 +410,6 @@
         function renderStock() {
             let html = stock.map(item => {
                 let isAlert = item.quantity <= item.alertLimit;
-                // يتغير لون البطاقة إلى الأحمر عند النقص
                 let cardClass = isAlert 
                     ? "bg-red-50 border-2 border-red-400 p-6 rounded-2xl shadow-sm space-y-4 transition animate-pulse" 
                     : "bg-white border p-6 rounded-2xl shadow-sm space-y-4 transition";
@@ -452,7 +448,7 @@
                 let itemsStr = o.items.map(i => `<div class="text-xs">▪️ ${i.product} (الكمية: ${i.qty} - السعر: ${i.price} DZD)</div>`).join('');
                 return `
                     <tr>
-                        <td class="p-4 font-mono font-bold text-amber-600">#BL-${o.id}</td>
+                        <td class="p-4 font-mono font-bold text-amber-600">#BL-${o.displayId || o.id}</td>
                         <td class="p-4 text-slate-500 font-mono text-xs">${o.createdAt}</td>
                         <td class="p-4 font-semibold text-slate-800">${o.clientName}</td>
                         <td class="p-4 text-slate-600">${itemsStr}</td>
@@ -484,7 +480,6 @@
             document.getElementById('returns-table-body').innerHTML = html;
         }
 
-        // Actions: Clients
         window.saveClient = async function() {
             let name = document.getElementById('client-name').value;
             if(!name) return;
@@ -514,7 +509,6 @@
             if(confirm('هل تريد حذف هذا المحل أو المورد نهائياً؟')) await deleteDoc(doc(db, "clients", id));
         }
 
-        // Actions: Products
         window.saveProduct = async function() {
             let name = document.getElementById('prod-name').value;
             let sellPrice = Number(document.getElementById('prod-sell').value);
@@ -541,7 +535,6 @@
             if(confirm('هل تريد حذف هذا المنتج؟')) await deleteDoc(doc(db, "products", id));
         }
 
-        // Actions: Stock
         window.updateDirectStock = async function(id, newQty) {
             await updateDoc(doc(db, "stock", id), {
                 quantity: Number(newQty),
@@ -560,7 +553,6 @@
             });
         }
 
-        // Actions: Orders
         window.addOrderItemRow = function() {
             let container = document.getElementById('order-items-container');
             let prodOpts = '<option value="">اختر المنتج...</option>' + products.map(p => `<option value="${p.name}" data-price="${p.sellPrice}">${p.name}</option>`).join('');
@@ -592,7 +584,7 @@
             document.getElementById('order-total-display').innerText = total + ' DZD';
         }
 
-        window.saveOrder = async function() {
+        window.saveOrder = async function(shouldPrint) {
             let clientName = document.getElementById('order-client').value;
             if(!clientName) return;
             let items = [];
@@ -604,19 +596,28 @@
             });
             if(items.length === 0) return;
             let totalPrice = items.reduce((sum, i) => sum + (i.qty * i.price), 0);
-            let randomId = Math.floor(100 + Math.random() * 900);
+            let displayId = Math.floor(100 + Math.random() * 900);
             
-            await addDoc(collection(db, "orders"), {
-                id: randomId, clientName, items, totalPrice, createdAt: getDateTime()
-            });
+            let orderData = { displayId, clientName, items, totalPrice, createdAt: getDateTime() };
+            let docRef = await addDoc(collection(db, "orders"), orderData);
             closeModal('order');
+
+            if(shouldPrint) {
+                printInvoice({ id: displayId, ...orderData });
+            }
         }
 
-        window.deleteOrder = async function(id) {
-            if(confirm('هل تريد حذف هذا الوصل؟')) await deleteDoc(doc(db, "orders", id));
+        // تم إصلاح دالة حذف الوصل بالاعتماد على معرف مستند Firebase الفعلي
+        window.deleteOrder = async function(docId) {
+            if(confirm('هل تريد حذف هذا الوصل نهائياً؟')) {
+                try {
+                    await deleteDoc(doc(db, "orders", docId));
+                } catch(e) {
+                    alert("حدث خطأ أثناء الحذف: " + e.message);
+                }
+            }
         }
 
-        // Actions: Returns
         window.saveReturn = async function() {
             let clientName = document.getElementById('return-client').value;
             let product = document.getElementById('return-product').value;
@@ -648,7 +649,6 @@
             if(confirm('حذف سجل المرتجع هذا؟')) await deleteDoc(doc(db, "returns", id));
         }
 
-        // Print Invoice (فقط اسم oeuf caille وتوقيع المحل التجاري)
         window.printInvoice = function(order) {
             let printWindow = window.open('', '_blank', 'width=800,height=600');
             let itemsHtml = order.items.map(i => `
@@ -664,7 +664,7 @@
                 <html dir="rtl">
                 <head>
                     <meta charset="UTF-8">
-                    <title>وصل تسليم - oeuf caille #${order.id}</title>
+                    <title>وصل تسليم - oeuf caille #${order.displayId || order.id}</title>
                     <style>
                         body { font-family: Tahoma, sans-serif; padding: 30px; color: #1e293b; }
                         .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
@@ -685,7 +685,7 @@
                         <div class="phone">📞 الهاتف: 0555688855</div>
                     </div>
                     <div class="info-box">
-                        <div>رقم الوصل: #${order.id}</div>
+                        <div>رقم الوصل: #${order.displayId || order.id}</div>
                         <div>التاريخ والوقت: ${order.createdAt}</div>
                         <div>المحل التجاري: ${order.clientName}</div>
                     </div>
