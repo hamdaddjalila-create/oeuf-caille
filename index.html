@@ -8,7 +8,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Google Fonts -->
@@ -97,7 +97,7 @@
                 </div>
 
                 <!-- 2. Clients -->
-                <div x-show="currentTab === 'clients'" class="space-y-4">
+                <div x-show="currentTab === 'clients'" class="space-y-4" style="display: none;">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">قائمة المحلات التجارية</h3>
                         <button @click="openClientModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ إضافة محل جديد</button>
@@ -130,7 +130,7 @@
                 </div>
 
                 <!-- 3. Products -->
-                <div x-show="currentTab === 'products'" class="space-y-4">
+                <div x-show="currentTab === 'products'" class="space-y-4" style="display: none;">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">إدارة المنتجات وأسعار الشراء والبيع</h3>
                         <button @click="openProductModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ إضافة منتج جديد</button>
@@ -161,7 +161,7 @@
                 </div>
 
                 <!-- 4. Stock -->
-                <div x-show="currentTab === 'stock'" class="space-y-4">
+                <div x-show="currentTab === 'stock'" class="space-y-4" style="display: none;">
                     <h3 class="text-xl font-bold text-slate-800">متابعة المخزون وتحديد كمية التنبيه عند النفاذ</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <template x-for="item in stock" :key="item.id">
@@ -199,7 +199,7 @@
                 </div>
 
                 <!-- 5. Orders -->
-                <div x-show="currentTab === 'orders'" class="space-y-4">
+                <div x-show="currentTab === 'orders'" class="space-y-4" style="display: none;">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">سجل الوصولات (مرتبة حسب التاريخ والوقت)</h3>
                         <div class="flex gap-2">
@@ -244,7 +244,7 @@
                 </div>
 
                 <!-- 6. Returns -->
-                <div x-show="currentTab === 'returns'" class="space-y-4">
+                <div x-show="currentTab === 'returns'" class="space-y-4" style="display: none;">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">سجل العلب والمنتجات التالفة أو المرتجعة</h3>
                         <button @click="openReturnModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ تسجيل مرتجع جديد</button>
@@ -672,4 +672,3 @@
     </script>
 </body>
 </html>
-
