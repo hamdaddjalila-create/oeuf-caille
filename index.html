@@ -31,7 +31,7 @@
                     <span class="text-3xl">🥚</span>
                     <div>
                         <h1 class="text-sm font-bold text-amber-400">Oeuf Caille</h1>
-                        <p class="text-[11px] text-slate-400">Gestion de Distribution Pro</p>
+                        <p class="text-[11px] text-slate-400">Cloud Firebase Pro ☁️</p>
                     </div>
                 </div>
                 <nav class="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-120px)]">
@@ -96,7 +96,7 @@
                     </div>
                 </div>
 
-                <!-- 2. Clients (قائمة المحلات) -->
+                <!-- 2. Clients (قائمة المحلات بدون إجراءات) -->
                 <div x-show="currentTab === 'clients'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">قائمة المحلات التجارية</h3>
@@ -112,7 +112,6 @@
                                     <th class="p-4">رقم الهاتف</th>
                                     <th class="p-4">العنوان</th>
                                     <th class="p-4">تاريخ وساعة الإضافة</th>
-                                    <th class="p-4 text-center">إجراءات</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y text-sm">
@@ -123,10 +122,6 @@
                                         <td class="p-4 text-slate-600 font-mono" x-text="client.phone"></td>
                                         <td class="p-4 text-slate-500" x-text="client.address"></td>
                                         <td class="p-4 text-slate-400 text-xs font-mono" x-text="client.createdAt"></td>
-                                        <td class="p-4 text-center space-x-2">
-                                            <button @click="editClient(client)" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">✏️ تعديل</button>
-                                            <button @click="deleteClient(client.id)" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
-                                        </td>
                                     </tr>
                                 </template>
                             </tbody>
@@ -134,7 +129,7 @@
                     </div>
                 </div>
 
-                <!-- 3. Products (المنتجات والأسعار) -->
+                <!-- 3. Products (المنتجات بدون إجراءات) -->
                 <div x-show="currentTab === 'products'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">إدارة المنتجات وأسعار الشراء والبيع</h3>
@@ -149,7 +144,6 @@
                                     <th class="p-4">سعر الشراء (DZD)</th>
                                     <th class="p-4">سعر البيع للمحلات (DZD)</th>
                                     <th class="p-4">تاريخ وساعة الإضافة</th>
-                                    <th class="p-4 text-center">إجراءات</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y text-sm">
@@ -159,10 +153,6 @@
                                         <td class="p-4 text-slate-600 font-mono" x-text="prod.purchasePrice + ' DZD'"></td>
                                         <td class="p-4 text-emerald-600 font-bold font-mono" x-text="prod.sellPrice + ' DZD'"></td>
                                         <td class="p-4 text-slate-400 text-xs font-mono" x-text="prod.createdAt"></td>
-                                        <td class="p-4 text-center space-x-2">
-                                            <button @click="editProduct(prod)" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">✏️ تعديل</button>
-                                            <button @click="deleteProduct(prod.id)" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
-                                        </td>
                                     </tr>
                                 </template>
                             </tbody>
@@ -170,9 +160,9 @@
                     </div>
                 </div>
 
-                <!-- 4. Stock (المخزون والتنبيهات) -->
+                <!-- 4. Stock (المخزون وتنبيهات النفاد وتحديد كمية التنبيه) -->
                 <div x-show="currentTab === 'stock'" class="space-y-4">
-                    <h3 class="text-xl font-bold text-slate-800">متابعة المخزون وتحديد كمية التنبيه</h3>
+                    <h3 class="text-xl font-bold text-slate-800">متابعة المخزون وتحديد كمية التنبيه عند النفاذ</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <template x-for="item in stock" :key="item.id">
                             <div class="bg-white p-6 rounded-2xl shadow-sm border space-y-4 relative">
@@ -184,22 +174,25 @@
                                     <span class="text-2xl">📦</span>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-slate-500">الكمية المتوفرة:</p>
+                                    <p class="text-xs text-slate-500">الكمية المتوفرة حالياً:</p>
                                     <p class="text-3xl font-extrabold text-amber-600 mt-1" x-text="item.quantity"></p>
                                 </div>
-                                <!-- Alert Threshold Setting -->
+                                
+                                <!-- تحديد كمية التنبيه عند النفاذ -->
                                 <div class="bg-slate-50 p-3 rounded-xl border space-y-1">
-                                    <label class="text-xs font-bold text-slate-600">كمية التنبيه عند النفاد:</label>
-                                    <input type="number" x-model.number="item.alertLimit" class="w-full border p-1.5 rounded-lg text-xs bg-white outline-none">
+                                    <label class="text-xs font-bold text-slate-600">حدد كمية التنبيه عند النفاد:</label>
+                                    <input type="number" x-model.number="item.alertLimit" @change="updateStockLimit(item)" class="w-full border p-2 rounded-lg text-xs bg-white outline-none font-bold text-amber-700">
                                 </div>
-                                <!-- Warning if low -->
+
+                                <!-- التنبيه في حالة نقص السلعة -->
                                 <template x-if="item.quantity <= item.alertLimit">
-                                    <div class="bg-red-50 border border-red-200 text-red-700 text-xs p-2 rounded-xl font-bold text-center">
-                                        ⚠️ تنبيه: الكمية على وشك النفاد!
+                                    <div class="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl font-bold text-center animate-pulse">
+                                        ⚠️ تنبيه خطير: كمية السلعة نقصت ووصلت للحد الأدنى (أو أقل من حد التنبيه المحدد)!
                                     </div>
                                 </template>
+
                                 <div class="flex gap-2 pt-2">
-                                    <input type="number" x-model.number="item.addQty" placeholder="الكمية" class="border p-2 rounded-xl text-xs w-24 outline-none focus:ring-2 focus:ring-amber-500">
+                                    <input type="number" x-model.number="item.addQty" placeholder="إضافة كمية" class="border p-2 rounded-xl text-xs w-28 outline-none focus:ring-2 focus:ring-amber-500">
                                     <button @click="updateStock(item)" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex-1">تحديث المخزون</button>
                                 </div>
                             </div>
@@ -207,10 +200,10 @@
                     </div>
                 </div>
 
-                <!-- 5. Orders (سجل الوصولات مرتبة حسب التاريخ) -->
+                <!-- 5. Orders (سجل الوصولات متعددة المنتجات) -->
                 <div x-show="currentTab === 'orders'" class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-slate-800">سجل الوصولات (مرتبة حسب التاريخ)</h3>
+                        <h3 class="text-xl font-bold text-slate-800">سجل الوصولات (مرتبة حسب التاريخ والوقت)</h3>
                         <div class="flex gap-2">
                             <button @click="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">📊 تصدير Excel</button>
                             <button @click="openOrderModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ فتح وصل تسليم جديد</button>
@@ -224,9 +217,8 @@
                                     <th class="p-4">رقم الوصل</th>
                                     <th class="p-4">تاريخ وساعة الإصدار</th>
                                     <th class="p-4">اسم المحل التجاري</th>
-                                    <th class="p-4">المنتج</th>
-                                    <th class="p-4">الكمية</th>
-                                    <th class="p-4">السعر الإجمالي (DZD)</th>
+                                    <th class="p-4">المنتجات والكميات</th>
+                                    <th class="p-4">المبلغ الإجمالي (DZD)</th>
                                     <th class="p-4 text-center">إجراءات وطباعة</th>
                                 </tr>
                             </thead>
@@ -236,12 +228,14 @@
                                         <td class="p-4 font-mono font-bold text-amber-600" x-text="'#BL-' + order.id"></td>
                                         <td class="p-4 text-slate-500 font-mono text-xs" x-text="order.createdAt"></td>
                                         <td class="p-4 font-semibold text-slate-800" x-text="order.clientName"></td>
-                                        <td class="p-4 text-slate-600" x-text="order.product"></td>
-                                        <td class="p-4 text-slate-800 font-bold" x-text="order.qty"></td>
+                                        <td class="p-4 text-slate-600">
+                                            <template x-for="item in order.items">
+                                                <div class="text-xs" x-text="item.product + ' (الكمية: ' + item.qty + ' - السعر: ' + item.price + ' DZD)'"></div>
+                                            </template>
+                                        </td>
                                         <td class="p-4 text-emerald-600 font-bold" x-text="order.totalPrice + ' DZD'"></td>
                                         <td class="p-4 text-center space-x-2">
                                             <button @click="printInvoice(order)" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">🖨️ طباعة</button>
-                                            <button @click="editOrder(order)" class="bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-amber-100 transition">✏️ تعديل</button>
                                             <button @click="deleteOrder(order.id)" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
                                         </td>
                                     </tr>
@@ -251,7 +245,7 @@
                     </div>
                 </div>
 
-                <!-- 6. Returns (المرتجعات والتالف مع الساعة) -->
+                <!-- 6. Returns (المرتجعات والتالف مع الساعة وزر الحفظ والتعديل والإلغاء) -->
                 <div x-show="currentTab === 'returns'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">سجل العلب والمنتجات التالفة أو المرتجعة</h3>
@@ -298,7 +292,7 @@
     <!-- Client Modal -->
     <div x-show="showClientModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 class="text-lg font-bold text-slate-800" x-text="isEditClient ? 'تعديل محل تجاري' : 'إضافة محل تجاري جديد'"></h3>
+            <h3 class="text-lg font-bold text-slate-800">إضافة محل تجاري جديد</h3>
             <input type="text" x-model="newClient.name" placeholder="اسم المحل التجاري" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
             <input type="text" x-model="newClient.manager" placeholder="اسم المسؤول" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
             <input type="text" x-model="newClient.phone" placeholder="رقم الهاتف" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
@@ -313,7 +307,7 @@
     <!-- Product Modal -->
     <div x-show="showProductModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 class="text-lg font-bold text-slate-800" x-text="isEditProduct ? 'تعديل منتج' : 'إضافة منتج جديد'"></h3>
+            <h3 class="text-lg font-bold text-slate-800">إضافة منتج جديد</h3>
             <input type="text" x-model="newProduct.name" placeholder="اسم المنتج" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
             <input type="number" x-model.number="newProduct.purchasePrice" placeholder="سعر الشراء (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
             <input type="number" x-model.number="newProduct.sellPrice" placeholder="سعر البيع للمحلات (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
@@ -324,24 +318,44 @@
         </div>
     </div>
 
-    <!-- Order / Invoice Modal -->
+    <!-- Order / Invoice Modal (متعدد المنتجات) -->
     <div x-show="showOrderModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 class="text-lg font-bold text-slate-800" x-text="isEditOrder ? 'تعديل وصل تسليم' : 'فتح وصل تسليم جديد'"></h3>
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-bold text-slate-800">فتح وصل تسليم جديد</h3>
+            
             <select x-model="newOrder.clientName" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 bg-white">
                 <option value="">اختر المحل التجاري للتوريد...</option>
                 <template x-for="c in clients">
                     <option :value="c.name" x-text="c.name"></option>
                 </template>
             </select>
-            <select x-model="newOrder.product" @change="updateOrderPrice()" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 bg-white">
-                <option value="">اختر المنتج...</option>
-                <template x-for="p in products">
-                    <option :value="p.name" x-text="p.name"></option>
+
+            <div class="border-t border-b py-3 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-sm text-slate-700">المنتجات في الوصل:</span>
+                    <button @click="addOrderItem()" class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">+ إضافة منتج للوصل</button>
+                </div>
+                
+                <template x-for="(item, index) in newOrder.items" :key="index">
+                    <div class="flex gap-2 items-center bg-slate-50 p-3 rounded-xl border">
+                        <select x-model="item.product" @change="updateItemPrice(index)" class="border p-2 rounded-lg text-xs flex-1 bg-white outline-none">
+                            <option value="">اختر المنتج...</option>
+                            <template x-for="p in products">
+                                <option :value="p.name" x-text="p.name"></option>
+                            </template>
+                        </select>
+                        <input type="number" x-model.number="item.qty" @input="calculateOrderTotals()" placeholder="الكمية" class="border p-2 rounded-lg text-xs w-20 outline-none">
+                        <input type="number" x-model.number="item.price" placeholder="السعر" class="border p-2 rounded-lg text-xs w-24 outline-none bg-slate-100" readonly>
+                        <button @click="removeOrderItem(index)" class="text-red-600 font-bold px-2 py-1 text-sm">✕</button>
+                    </div>
                 </template>
-            </select>
-            <input type="number" x-model.number="newOrder.qty" @input="calculateOrderTotal()" placeholder="الكمية" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
-            <input type="number" x-model.number="newOrder.totalPrice" placeholder="المبلغ الإجمالي (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
+            </div>
+
+            <div class="flex justify-between items-center font-bold text-base bg-amber-50 p-3 rounded-xl border border-amber-200">
+                <span>المبلغ الإجمالي للوصل:</span>
+                <span class="text-amber-700" x-text="newOrder.totalPrice + ' DZD'"></span>
+            </div>
+
             <div class="flex justify-end gap-2 pt-2">
                 <button @click="showOrderModal = false" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
                 <button @click="saveOrder()" class="bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ الوصل</button>
@@ -349,7 +363,7 @@
         </div>
     </div>
 
-    <!-- Return Modal -->
+    <!-- Return Modal (مع أزرار الحفظ والتعديل والإلغاء) -->
     <div x-show="showReturnModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
             <h3 class="text-lg font-bold text-slate-800" x-text="isEditReturn ? 'تعديل مرتجع' : 'تسجيل سلعة تالفة أو مرتجعة'"></h3>
@@ -369,13 +383,29 @@
             <input type="text" x-model="newReturn.reason" placeholder="السبب (كسر، فساد...)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500">
             <div class="flex justify-end gap-2 pt-2">
                 <button @click="showReturnModal = false" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
-                <button @click="saveReturn()" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ المرتجع</button>
+                <button @click="saveReturn()" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow" x-text="isEditReturn ? 'تعديل' : 'حفظ'"></button>
             </div>
         </div>
     </div>
 
-    <!-- Application Logic -->
-    <script>
+    <!-- Application Logic & Firebase Connection (ES Modules) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCEfDhz8qD6dRCJ2WJZaZVENPxY0GjCrk",
+            authDomain: "oeufcailleapp.firebaseapp.com",
+            projectId: "oeufcailleapp",
+            storageBucket: "oeufcailleapp.firebasestorage.app",
+            messagingSenderId: "751442781351",
+            appId: "1:751442781351:web:a29eabdcb7526d3fc66782",
+            measurementId: "G-XFSMJPY2S"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         function getFormattedDateTime() {
             const now = new Date();
             const date = now.toISOString().split('T')[0];
@@ -383,49 +413,51 @@
             return `${date} ${time}`;
         }
 
-        function distributionApp() {
+        window.distributionApp = function() {
             return {
                 currentTab: 'dashboard',
                 
                 showClientModal: false,
-                isEditClient: false,
-                editClientId: null,
                 newClient: { name: '', manager: '', phone: '', address: '' },
-                clients: [
-                    { id: 1, name: 'Supermarché El-Bahdja', manager: 'عمر', phone: '0550000000', address: 'وهران', createdAt: '2026-10-28 08:30:00' }
-                ],
+                clients: [],
 
                 showProductModal: false,
-                isEditProduct: false,
-                editProductId: null,
                 newProduct: { name: '', purchasePrice: '', sellPrice: '' },
-                products: [
-                    { id: 1, name: 'بيض السمان', purchasePrice: 250, sellPrice: 300, createdAt: '2026-10-28 08:31:00' },
-                    { id: 2, name: 'بيض العرب (البلدي)', purchasePrice: 400, sellPrice: 480, createdAt: '2026-10-28 08:32:00' },
-                    { id: 3, name: 'السمان المجمد', purchasePrice: 350, sellPrice: 420, createdAt: '2026-10-28 08:33:00' }
-                ],
+                products: [],
 
-                stock: [
-                    { id: 1, name: 'بيض السمان', quantity: 1200, alertLimit: 100, addQty: 0, updatedAt: '2026-10-28 08:35:00' },
-                    { id: 2, name: 'بيض العرب (البلدي)', quantity: 800, alertLimit: 50, addQty: 0, updatedAt: '2026-10-28 08:35:00' },
-                    { id: 3, name: 'السمان المجمد', quantity: 450, alertLimit: 30, addQty: 0, updatedAt: '2026-10-28 08:35:00' }
-                ],
+                stock: [],
 
                 showOrderModal: false,
-                isEditOrder: false,
-                editOrderId: null,
-                newOrder: { clientName: '', product: '', qty: '', totalPrice: '' },
-                orders: [
-                    { id: 101, createdAt: '2026-10-28 09:00:00', clientName: 'Supermarché El-Bahdja', product: 'بيض السمان', qty: 150, totalPrice: 45000 }
-                ],
+                newOrder: { clientName: '', items: [{ product: '', qty: '', price: 0 }], totalPrice: 0 },
+                orders: [],
 
                 showReturnModal: false,
                 isEditReturn: false,
                 editReturnId: null,
                 newReturn: { clientName: '', product: '', qty: '', reason: '' },
-                returnsList: [
-                    { id: 1, createdAt: '2026-10-28 10:15:00', clientName: 'Supermarché El-Bahdja', product: 'بيض السمان', qty: 5, reason: 'كسر أثناء النقل' }
-                ],
+                returnsList: [],
+
+                init() {
+                    this.loadDataFromFirebase();
+                },
+
+                loadDataFromFirebase() {
+                    onSnapshot(collection(db, "clients"), (snapshot) => {
+                        this.clients = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    });
+                    onSnapshot(collection(db, "products"), (snapshot) => {
+                        this.products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    });
+                    onSnapshot(collection(db, "stock"), (snapshot) => {
+                        this.stock = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    });
+                    onSnapshot(collection(db, "orders"), (snapshot) => {
+                        this.orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    });
+                    onSnapshot(collection(db, "returns"), (snapshot) => {
+                        this.returnsList = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    });
+                },
 
                 getPageTitle() {
                     const titles = {
@@ -451,115 +483,80 @@
                     return this.returnsList.reduce((sum, r) => sum + (Number(r.qty) || 0), 0);
                 },
 
-                // Client Methods
                 openClientModal() {
-                    this.isEditClient = false;
                     this.newClient = { name: '', manager: '', phone: '', address: '' };
                     this.showClientModal = true;
                 },
-                editClient(client) {
-                    this.isEditClient = true;
-                    this.editClientId = client.id;
-                    this.newClient = { ...client };
-                    this.showClientModal = true;
-                },
-                saveClient() {
+                async saveClient() {
                     if (!this.newClient.name) return;
-                    if (this.isEditClient) {
-                        const index = this.clients.findIndex(c => c.id === this.editClientId);
-                        if (index !== -1) {
-                            this.clients[index] = { ...this.clients[index], ...this.newClient };
-                        }
-                    } else {
-                        this.clients.push({ id: Date.now(), ...this.newClient, createdAt: getFormattedDateTime() });
-                    }
+                    await addDoc(collection(db, "clients"), { ...this.newClient, createdAt: getFormattedDateTime() });
                     this.showClientModal = false;
                 },
-                deleteClient(id) {
-                    if (confirm('هل أنت متأكد من حذف هذا المحل؟')) {
-                        this.clients = this.clients.filter(c => c.id !== id);
-                    }
-                },
 
-                // Product Methods
                 openProductModal() {
-                    this.isEditProduct = false;
                     this.newProduct = { name: '', purchasePrice: '', sellPrice: '' };
                     this.showProductModal = true;
                 },
-                editProduct(prod) {
-                    this.isEditProduct = true;
-                    this.editProductId = prod.id;
-                    this.newProduct = { ...prod };
-                    this.showProductModal = true;
-                },
-                saveProduct() {
+                async saveProduct() {
                     if (!this.newProduct.name) return;
-                    if (this.isEditProduct) {
-                        const index = this.products.findIndex(p => p.id === this.editProductId);
-                        if (index !== -1) {
-                            this.products[index] = { ...this.products[index], ...this.newProduct };
-                        }
-                    } else {
-                        this.products.push({ id: Date.now(), ...this.newProduct, createdAt: getFormattedDateTime() });
-                    }
+                    await addDoc(collection(db, "products"), { ...this.newProduct, createdAt: getFormattedDateTime() });
+                    await addDoc(collection(db, "stock"), { name: this.newProduct.name, quantity: 0, alertLimit: 10, updatedAt: getFormattedDateTime() });
                     this.showProductModal = false;
                 },
-                deleteProduct(id) {
-                    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-                        this.products = this.products.filter(p => p.id !== id);
-                    }
-                },
 
-                // Stock Methods
-                updateStock(item) {
+                async updateStock(item) {
                     if (!item.addQty || item.addQty <= 0) return;
-                    item.quantity += Number(item.addQty);
-                    item.addQty = 0;
-                    item.updatedAt = getFormattedDateTime();
+                    const newQty = Number(item.quantity) + Number(item.addQty);
+                    await updateDoc(doc(db, "stock", item.id), {
+                        quantity: newQty,
+                        addQty: 0,
+                        updatedAt: getFormattedDateTime()
+                    });
+                },
+                async updateStockLimit(item) {
+                    await updateDoc(doc(db, "stock", item.id), { alertLimit: Number(item.alertLimit) });
                 },
 
-                // Order Methods
                 openOrderModal() {
-                    this.isEditOrder = false;
-                    this.newOrder = { clientName: '', product: '', qty: '', totalPrice: '' };
+                    this.newOrder = { clientName: '', items: [{ product: '', qty: '', price: 0 }], totalPrice: 0 };
                     this.showOrderModal = true;
                 },
-                editOrder(order) {
-                    this.isEditOrder = true;
-                    this.editOrderId = order.id;
-                    this.newOrder = { ...order };
-                    this.showOrderModal = true;
+                addOrderItem() {
+                    this.newOrder.items.push({ product: '', qty: '', price: 0 });
                 },
-                updateOrderPrice() {
-                    const prod = this.products.find(p => p.name === this.newOrder.product);
-                    if (prod && this.newOrder.qty) {
-                        this.newOrder.totalPrice = prod.sellPrice * this.newOrder.qty;
+                removeOrderItem(index) {
+                    this.newOrder.items.splice(index, 1);
+                    this.calculateOrderTotals();
+                },
+                updateItemPrice(index) {
+                    const item = this.newOrder.items[index];
+                    const prod = this.products.find(p => p.name === item.product);
+                    if (prod) {
+                        item.price = Number(prod.sellPrice);
                     }
+                    this.calculateOrderTotals();
                 },
-                calculateOrderTotal() {
-                    this.updateOrderPrice();
-                },
-                saveOrder() {
-                    if (!this.newOrder.clientName || !this.newOrder.product || !this.newOrder.qty) return;
-                    if (this.isEditOrder) {
-                        const index = this.orders.findIndex(o => o.id === this.editOrderId);
-                        if (index !== -1) {
-                            this.orders[index] = { ...this.orders[index], ...this.newOrder };
+                calculateOrderTotals() {
+                    let total = 0;
+                    this.newOrder.items.forEach(item => {
+                        if (item.qty && item.price) {
+                            total += Number(item.qty) * Number(item.price);
                         }
-                    } else {
-                        const newId = Math.floor(100 + Math.random() * 900);
-                        this.orders.push({ id: newId, createdAt: getFormattedDateTime(), ...this.newOrder });
-                    }
+                    });
+                    this.newOrder.totalPrice = total;
+                },
+                async saveOrder() {
+                    if (!this.newOrder.clientName || this.newOrder.items.length === 0) return;
+                    const randomId = Math.floor(100 + Math.random() * 900);
+                    await addDoc(collection(db, "orders"), { id: randomId, createdAt: getFormattedDateTime(), ...this.newOrder });
                     this.showOrderModal = false;
                 },
-                deleteOrder(id) {
+                async deleteOrder(id) {
                     if (confirm('هل تريد حذف هذا الوصل؟')) {
-                        this.orders = this.orders.filter(o => o.id !== id);
+                        await deleteDoc(doc(db, "orders", id));
                     }
                 },
 
-                // Return Methods
                 openReturnModal() {
                     this.isEditReturn = false;
                     this.newReturn = { clientName: '', product: '', qty: '', reason: '' };
@@ -568,39 +565,51 @@
                 editReturn(ret) {
                     this.isEditReturn = true;
                     this.editReturnId = ret.id;
-                    this.newReturn = { ...ret };
+                    this.newReturn = { clientName: ret.clientName, product: ret.product, qty: ret.qty, reason: ret.reason };
                     this.showReturnModal = true;
                 },
-                saveReturn() {
+                async saveReturn() {
                     if (!this.newReturn.clientName || !this.newReturn.product || !this.newReturn.qty) return;
                     if (this.isEditReturn) {
-                        const index = this.returnsList.findIndex(r => r.id === this.editReturnId);
-                        if (index !== -1) {
-                            this.returnsList[index] = { ...this.returnsList[index], ...this.newReturn };
-                        }
+                        await updateDoc(doc(db, "returns", this.editReturnId), this.newReturn);
                     } else {
-                        this.returnsList.push({ id: Date.now(), createdAt: getFormattedDateTime(), ...this.newReturn });
+                        await addDoc(collection(db, "returns"), { createdAt: getFormattedDateTime(), ...this.newReturn });
                     }
                     this.showReturnModal = false;
                 },
-                deleteReturn(id) {
+                async deleteReturn(id) {
                     if (confirm('هل تريد حذف سجل المرتجع هذا؟')) {
-                        this.returnsList = this.returnsList.filter(r => r.id !== id);
+                        await deleteDoc(doc(db, "returns", id));
                     }
                 },
 
-                // Print Invoice
                 printInvoice(order) {
                     const printWindow = window.open('', '_blank', 'width=800,height=600');
                     if (!printWindow) {
                         alert("يرجى السماح بفتح النوافذ المنبثقة (Pop-ups) للطباعة.");
                         return;
                     }
+
+                    let itemsHtml = '';
+                    if (order.items && order.items.length > 0) {
+                        order.items.forEach(item => {
+                            let itemTotal = Number(item.qty) * Number(item.price);
+                            itemsHtml += `
+                                <tr>
+                                    <td><b>${item.product}</b></td>
+                                    <td><b>${item.qty}</b></td>
+                                    <td><b>${item.price} DZD</b></td>
+                                    <td><b>${itemTotal} DZD</b></td>
+                                </tr>
+                            `;
+                        });
+                    }
+
                     const html = `<!DOCTYPE html>
                     <html dir="rtl">
                     <head>
                         <meta charset="UTF-8">
-                        <title>وصل تسليم - Oeuf Caille #${order.id}</title>
+                        <title>وصل تسليم - oeuf caille #${order.id || 'BL'}</title>
                         <style>
                             body { font-family: 'Amiri', Tahoma, sans-serif; padding: 30px; color: #1e293b; background: #fff; }
                             .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
@@ -612,17 +621,18 @@
                             th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: center; font-size: 15px; }
                             th { background: #f1f5f9; color: #334155; }
                             .total { text-align: left; font-size: 18px; font-weight: bold; margin-top: 15px; }
-                            .footer { display: flex; justify-content: space-between; margin-top: 60px; font-weight: bold; font-size: 16px; }
+                            .footer { display: flex; justify-content: flex-end; margin-top: 60px; font-weight: bold; font-size: 16px; }
+                            .signature-box { text-align: center; min-width: 200px; }
                         </style>
                     </head>
                     <body>
                         <div class="header">
-                            <div class="title">مؤسسة Oeuf Caille لتوريد البيض والسمان</div>
+                            <div class="title">oeuf caille</div>
                             <div class="sub-title">Bon de Livraison / وصل تسليم بضاعة للمحلات</div>
                             <div class="phone">📞 الهاتف: 0555688855</div>
                         </div>
                         <div class="info-box">
-                            <div>رقم الوصل: #BL-${order.id}</div>
+                            <div>رقم الوصل: #${order.id || 'BL'}</div>
                             <div>تاريخ وساعة الإصدار: ${order.createdAt}</div>
                             <div>المحل التجاري: ${order.clientName}</div>
                         </div>
@@ -631,21 +641,17 @@
                                <tr>
                                    <th>المنتج</th>
                                    <th>الكمية المسلمة</th>
-                                   <th>السعر الإجمالي (DZD)</th>
+                                   <th>سعر الوحدة</th>
+                                   <th>المبلغ الإجمالي</th>
                                </tr>
                             </thead>
                             <tbody>
-                               <tr>
-                                   <td><b>${order.product}</b></td>
-                                   <td><b>${order.qty}</b></td>
-                                   <td><b>${order.totalPrice} DZD</b></td>
-                               </tr>
+                               ${itemsHtml}
                             </tbody>
                         </table>
                         <div class="total">المبلغ الإجمالي المستحق: ${order.totalPrice} DZD</div>
                         <div class="footer">
-                            <div>توقيع المورد</div>
-                            <div>توقيع واستلام المحل التجاري</div>
+                            <div class="signature-box">توقيع واستلام المحل التجاري</div>
                         </div>
                         <script>
                             window.onload = function() { window.print(); }
@@ -668,4 +674,3 @@
     </script>
 </body>
 </html>
-
