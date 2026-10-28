@@ -7,8 +7,6 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Google Fonts -->
@@ -16,7 +14,6 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .font-arabic { font-family: 'Amiri', serif; }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800" x-data="distributionApp()">
@@ -97,7 +94,7 @@
                 </div>
 
                 <!-- 2. Clients -->
-                <div x-show="currentTab === 'clients'" class="space-y-4" style="display: none;">
+                <div x-show="currentTab === 'clients'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">قائمة المحلات التجارية</h3>
                         <button @click="openClientModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ إضافة محل جديد</button>
@@ -130,7 +127,7 @@
                 </div>
 
                 <!-- 3. Products -->
-                <div x-show="currentTab === 'products'" class="space-y-4" style="display: none;">
+                <div x-show="currentTab === 'products'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">إدارة المنتجات وأسعار الشراء والبيع</h3>
                         <button @click="openProductModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ إضافة منتج جديد</button>
@@ -161,7 +158,7 @@
                 </div>
 
                 <!-- 4. Stock -->
-                <div x-show="currentTab === 'stock'" class="space-y-4" style="display: none;">
+                <div x-show="currentTab === 'stock'" class="space-y-4">
                     <h3 class="text-xl font-bold text-slate-800">متابعة المخزون وتحديد كمية التنبيه عند النفاذ</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <template x-for="item in stock" :key="item.id">
@@ -199,7 +196,7 @@
                 </div>
 
                 <!-- 5. Orders -->
-                <div x-show="currentTab === 'orders'" class="space-y-4" style="display: none;">
+                <div x-show="currentTab === 'orders'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">سجل الوصولات (مرتبة حسب التاريخ والوقت)</h3>
                         <div class="flex gap-2">
@@ -244,7 +241,7 @@
                 </div>
 
                 <!-- 6. Returns -->
-                <div x-show="currentTab === 'returns'" class="space-y-4" style="display: none;">
+                <div x-show="currentTab === 'returns'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">سجل العلب والمنتجات التالفة أو المرتجعة</h3>
                         <button @click="openReturnModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ تسجيل مرتجع جديد</button>
@@ -288,7 +285,7 @@
     <!-- Modals -->
 
     <!-- Client Modal -->
-    <div x-show="showClientModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" style="display: none;">
+    <div x-show="showClientModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
             <h3 class="text-lg font-bold text-slate-800">إضافة محل تجاري جديد</h3>
             <input type="text" x-model="newClient.name" placeholder="اسم المحل التجاري" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
@@ -303,7 +300,7 @@
     </div>
 
     <!-- Product Modal -->
-    <div x-show="showProductModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" style="display: none;">
+    <div x-show="showProductModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
             <h3 class="text-lg font-bold text-slate-800">إضافة منتج جديد</h3>
             <input type="text" x-model="newProduct.name" placeholder="اسم المنتج" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
@@ -317,7 +314,7 @@
     </div>
 
     <!-- Order Modal -->
-    <div x-show="showOrderModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" style="display: none;">
+    <div x-show="showOrderModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-slate-800">فتح وصل تسليم جديد</h3>
             
@@ -362,9 +359,9 @@
     </div>
 
     <!-- Return Modal -->
-    <div x-show="showReturnModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" style="display: none;">
+    <div x-show="showReturnModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 class="text-lg font-bold text-slate-800" x-text="isEditReturn ? 'تعديل مرتجع' : 'تسجيل سلعة تالفة أو مرتجعة'"></h3>
+            <h3 class="text-lg font-bold text-slate-800">تسجيل سلعة تالفة أو مرتجعة</h3>
             <select x-model="newReturn.clientName" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500 bg-white">
                 <option value="">اختر المحل...</option>
                 <template x-for="c in clients">
@@ -381,7 +378,7 @@
             <input type="text" x-model="newReturn.reason" placeholder="السبب (كسر، فساد...)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500">
             <div class="flex justify-end gap-2 pt-2">
                 <button @click="showReturnModal = false" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
-                <button @click="saveReturn()" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow" x-text="isEditReturn ? 'تعديل' : 'حفظ'"></button>
+                <button @click="saveReturn()" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ</button>
             </div>
         </div>
     </div>
@@ -430,7 +427,6 @@
                 orders: [],
 
                 showReturnModal: false,
-                isEditReturn: false,
                 editReturnId: null,
                 newReturn: { clientName: '', product: '', qty: '', reason: '' },
                 returnsList: [],
@@ -556,20 +552,19 @@
                 },
 
                 openReturnModal() {
-                    this.isEditReturn = false;
                     this.newReturn = { clientName: '', product: '', qty: '', reason: '' };
                     this.showReturnModal = true;
                 },
                 editReturn(ret) {
-                    this.isEditReturn = true;
                     this.editReturnId = ret.id;
                     this.newReturn = { clientName: ret.clientName, product: ret.product, qty: ret.qty, reason: ret.reason };
                     this.showReturnModal = true;
                 },
                 async saveReturn() {
                     if (!this.newReturn.clientName || !this.newReturn.product || !this.newReturn.qty) return;
-                    if (this.isEditReturn) {
+                    if (this.editReturnId) {
                         await updateDoc(doc(db, "returns", this.editReturnId), this.newReturn);
+                        this.editReturnId = null;
                     } else {
                         await addDoc(collection(db, "returns"), { createdAt: getFormattedDateTime(), ...this.newReturn });
                     }
@@ -670,5 +665,7 @@
             }
         }
     </script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
