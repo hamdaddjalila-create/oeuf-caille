@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Distribution - Œufs & Caille</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- SheetJS CDN (Export Excel) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-arabic { font-family: 'Amiri', serif; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800" x-data="distributionApp()">
+
+    <!-- Main Layout -->
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside class="w-72 bg-slate-900 text-white flex flex-col justify-between hidden md:flex">
+            <div>
+                <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                    <span class="text-3xl">🥚</span>
+                    <div>
+                        <h1 class="text-sm font-bold text-amber-400">Distribution Avicole</h1>
+                        <p class="text-[11px] text-slate-400">Gestion des Grosses Commandes</p>
+                    </div>
+                </div>
+                <nav class="p-4 space-y-2">
+                    <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition">📊 Tableau de bord</button>
+                    <button @click="currentTab = 'clients'" :class="currentTab === 'clients' ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition">🏪 المحلات الكبرى (Clients)</button>
+                    <button @click="currentTab = 'stock'" :class="currentTab === 'stock' ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition">📦 المخزون (Stock)</button>
+                    <button @click="currentTab = 'orders'" :class="currentTab === 'orders' ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition">🛒 الطلبيات والوصولات</button>
+                    <button @click="currentTab = 'returns'" :class="currentTab === 'returns' ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition">🔄 المرتجعات والتالف (Retours)</button>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-800 text-xs text-slate-400 text-center">
+                Système Professionnel v2.0 🚀
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col overflow-y-auto">
+            
+            <!-- Top Header -->
+            <header class="bg-white shadow-sm border-b h-16 flex items-center justify-between px-6">
+                <h2 class="text-lg font-bold text-slate-700" x-text="getPageTitle()"></h2>
+                <div class="flex items-center gap-3">
+                    <span class="bg-amber-50 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold border border-amber-200">Session Active 🟢</span>
+                </div>
+            </header>
+
+            <!-- Dynamic Views -->
+            <main class="p-6 space-y-6">
+                
+                <!-- 1. Dashboard -->
+                <div x-show="currentTab === 'dashboard'" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-500 font-medium">المحلات الكبرى</p>
+                                <h3 class="text-2xl font-bold mt-1 text-slate-800" x-text="clients.length"></h3>
+                            </div>
+                            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl">🏪</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-500 font-medium">إجمالي الطلبيات والوصولات</p>
+                                <h3 class="text-2xl font-bold mt-1 text-slate-800" x-text="orders.length"></h3>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">🛒</div>
+                        </div>
+                        <div class="bg-emerald-50 border-emerald-200 p-5 rounded-2xl shadow-sm border flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-emerald-700 font-bold">المبيعات الإجمالية</p>
+                                <h3 class="text-xl font-bold mt-1 text-emerald-700" x-text="totalRevenue() + ' DZD'"></h3>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-xl shadow">💵</div>
+                        </div>
+                        <div class="bg-red-50 border-red-200 p-5 rounded-2xl shadow-sm border flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-red-700 font-bold">إجمالي السلع التالفة المرجعة</p>
+                                <h3 class="text-xl font-bold mt-1 text-red-700" x-text="totalReturnsCount() + ' وحدة'"></h3>
+                            </div>
+                            <div class="w-12 h-12 bg-red-600 text-white rounded-xl flex items-center justify-center text-xl shadow">🔄</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Clients (المحلات الكبرى) -->
+                <div x-show="currentTab === 'clients'" class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-slate-800">قائمة المحلات الكبرى المورد لها</h3>
+                        <button @click="openClientModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ إضافة محل جديد</button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase tracking-wider">
+                                    <th class="p-4">اسم المحل / Supermarché</th>
+                                    <th class="p-4">المسؤول</th>
+                                    <th class="p-4">رقم الهاتف</th>
+                                    <th class="p-4">العنوان</th>
+                                    <th class="p-4 text-center">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y text-sm">
+                                <template x-for="client in clients" :key="client.id">
+                                    <tr>
+                                        <td class="p-4 font-semibold text-slate-800" x-text="client.name"></td>
+                                        <td class="p-4 text-slate-600" x-text="client.manager"></td>
+                                        <td class="p-4 text-slate-600 font-mono" x-text="client.phone"></td>
+                                        <td class="p-4 text-slate-500" x-text="client.address"></td>
+                                        <td class="p-4 text-center space-x-2">
+                                            <button @click="deleteClient(client.id)" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. Stock (المخزون) -->
+                <div x-show="currentTab === 'stock'" class="space-y-4">
+                    <h3 class="text-xl font-bold text-slate-800">إدارة المخزون</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <template x-for="item in stock" :key="item.id">
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-bold text-lg text-slate-800" x-text="item.name"></h4>
+                                    <span class="text-2xl" x-text="item.icon"></span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500">الكمية المتوفرة:</p>
+                                    <p class="text-3xl font-extrabold text-amber-600 mt-1" x-text="item.quantity + ' ' + item.unit"></p>
+                                </div>
+                                <div class="flex gap-2 pt-2">
+                                    <input type="number" x-model.number="item.addQty" placeholder="الكمية" class="border p-2 rounded-xl text-xs w-24 outline-none focus:ring-2 focus:ring-amber-500">
+                                    <button @click="updateStock(item)" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex-1">تحديث المخزون</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 4. Orders & Invoices (الطلبيات ووصفات التسليم) -->
+                <div x-show="currentTab === 'orders'" class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-slate-800">سجل الطلبيات وإصدار وصلات التسليم (Bons de Livraison)</h3>
+                        <div class="flex gap-2">
+                            <button @click="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">📊 تصدير Excel</button>
+                            <button @click="openOrderModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ فتح وصل وتوريد جديد</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase tracking-wider">
+                                    <th class="p-4">رقم الوصل</th>
+                                    <th class="p-4">التاريخ</th>
+                                    <th class="p-4">اسم المحل</th>
+                                    <th class="p-4">المنتج</th>
+                                    <th class="p-4">الكمية المسلمة</th>
+                                    <th class="p-4">المبلغ الإجمالي (DZD)</th>
+                                    <th class="p-4 text-center">إجراءات و طباعة</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y text-sm">
+                                <template x-for="order in orders" :key="order.id">
+                                    <tr>
+                                        <td class="p-4 font-mono font-bold text-amber-600" x-text="'#BL-' + order.id"></td>
+                                        <td class="p-4 text-slate-500 font-mono text-xs" x-text="order.date"></td>
+                                        <td class="p-4 font-semibold text-slate-800" x-text="order.clientName"></td>
+                                        <td class="p-4 text-slate-600" x-text="order.product"></td>
+                                        <td class="p-4 text-slate-800 font-bold" x-text="order.qty"></td>
+                                        <td class="p-4 text-emerald-600 font-bold" x-text="order.totalPrice + ' DZD'"></td>
+                                        <td class="p-4 text-center space-x-2">
+                                            <button @click="printInvoice(order)" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">🖨️ طباعة الوصل</button>
+                                            <button @click="deleteOrder(order.id)" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 5. Returns / Damaged Goods (المرتجعات والتالف) -->
+                <div x-show="currentTab === 'returns'" class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-slate-800">سجل العلب والمنتجات التالفة / المرتجعة من المحلات</h3>
+                        <button @click="openReturnModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ تسجيل مرتجع / تالف</button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase tracking-wider">
+                                    <th class="p-4">التاريخ</th>
+                                    <th class="p-4">اسم المحل</th>
+                                    <th class="p-4">المنتج التالف</th>
+                                    <th class="p-4">الكمية المرتجعة</th>
+                                    <th class="p-4">السبب / ملاحظات</th>
+                                    <th class="p-4 text-center">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y text-sm">
+                                <template x-for="ret in returnsList" :key="ret.id">
+                                    <tr>
+                                        <td class="p-4 text-slate-500 font-mono text-xs" x-text="ret.date"></td>
+                                        <td class="p-4 font-semibold text-slate-800" x-text="ret.clientName"></td>
+                                        <td class="p-4 text-red-600 font-bold" x-text="ret.product"></td>
+                                        <td class="p-4 text-slate-800 font-bold" x-text="ret.qty"></td>
+                                        <td class="p-4 text-slate-500" x-text="ret.reason"></td>
+                                        <td class="p-4 text-center">
+                                            <button @click="deleteReturn(ret.id)" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template x-if="returnsList.length === 0">
+                                    <tr><td colspan="6" class="p-8 text-center text-slate-400">لا توجد منتجات مرتجعة مسجلة.</td></tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Client Modal -->
+    <div x-show="showClientModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <h3 class="text-lg font-bold text-slate-800">إضافة محل تجاري جديد</h3>
+            <input type="text" x-model="newClient.name" placeholder="اسم المحل (Supermarché)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
+            <input type="text" x-model="newClient.manager" placeholder="اسم المسؤول" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
+            <input type="text" x-model="newClient.phone" placeholder="رقم الهاتف" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
+            <input type="text" x-model="newClient.address" placeholder="العنوان / المدينة" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
+            <div class="flex justify-end gap-2 pt-2">
+                <button @click="showClientModal = false" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
+                <button @click="saveClient()" class="bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Order / Invoice Modal -->
+    <div x-show="showOrderModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <h3 class="text-lg font-bold text-slate-800">فتح وصل تسليم (Bon de Livraison) جديد</h3>
+            <select x-model="newOrder.clientName" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+                <option value="">اختر المحل التجاري...</option>
+                <template x-for="c in clients">
+                    <option :value="c.name" x-text="c.name"></option>
+                </template>
+            </select>
+            <select x-model="newOrder.product" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+                <option value="">اختر المنتج...</option>
+                <option value="بيض السمان">بيض السمان</option>
+                <option value="بيض العرب (البلدي)">بيض العرب (البلدي)</option>
+                <option value="السمان المجمد">السمان المجمد</option>
+            </select>
+            <input type="number" x-model.number="newOrder.qty" placeholder="الكمية المسلمة" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
+            <input type="number" x-model.number="newOrder.totalPrice" placeholder="المبلغ الإجمالي (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
+            <div class="flex justify-end gap-2 pt-2">
+                <button @click="showOrderModal = false" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
+                <button @click="saveOrder()" class="bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ وإصدار الوصل</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Return / Damaged Goods Modal -->
+    <div x-show="showReturnModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <h3 class="text-lg font-bold text-slate-800">تسجيل سلع تالفة أو مرتجعة</h3>
+            <select x-model="newReturn.clientName" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500 bg-white">
+                <option value="">اختر المحل التجاري...</option>
+                <template x-for="c in clients">
+                    <option :value="c.name" x-text="c.name"></option>
+                </template>
+            </select>
+            <select x-model="newReturn.product" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500 bg-white">
+                <option value="">اختر المنتج التالف...</option>
+                <option value="بيض السمان">بيض السمان</option>
+                <option value="بيض العرب (البلدي)">بيض العرب (البلدي)</option>
+                <option value="السمان المجمد">السمان المجمد</option>
+            </select>
+            <input type="number" x-model.number="newReturn.qty" placeholder="الكمية المرتجعة (تالفة)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500">
+            <input type="text" x-model="newReturn.reason" placeholder="السبب (مثل: كسر، فساد، تاريخ انتهاء...)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500">
+            <div class="flex justify-end gap-2 pt-2">
+                <button @click="showReturnModal = false" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
+                <button @click="saveReturn()" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ المرتجع</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        function distributionApp() {
+            return {
+                currentTab: 'dashboard',
+                showClientModal: false,
+                showOrderModal: false,
+                showReturnModal: false,
+                clients: [
+                    { id: 1, name: 'Supermarché El-Bahdja', manager: 'عمر', phone: '0550000000', address: 'وهران' },
+                    { id: 2, name: 'Hypermarché Aswak', manager: 'محمد', phone: '0660000000', address: 'الجزائر العاصمة' }
+                ],
+                stock: [
+                    { id: 1, name: 'بيض السمان', icon: '🥚', quantity: 1200, unit: 'طبق', addQty: 0 },
+                    { id: 2, name: 'بيض العرب (البلدي)', icon: '🥚', quantity: 800, unit: 'طبق', addQty: 0 },
+                    { id: 3, name: 'السمان المجمد', icon: '🍗', quantity: 450, unit: 'وحدة', addQty: 0 }
+                ],
+                orders: [
+                    { id: 101, date: '2026-10-28', clientName: 'Supermarché El-Bahdja', product: 'بيض السمان', qty: 150, totalPrice: 45000 }
+                ],
+                returnsList: [
+                    { id: 1, date: '2026-10-27', clientName: 'Hypermarché Aswak', product: 'بيض السمان', qty: 5, reason: 'كسر أثناء النقل' }
+                ],
+                newClient: { name: '', manager: '', phone: '', address: '' },
+                newOrder: { clientName: '', product: '', qty: '', totalPrice: '' },
+                newReturn: { clientName: '', product: '', qty: '', reason: '' },
+
+                getPageTitle() {
+                    const titles = {
+                        'dashboard': 'لوحة التحكم العامة',
+                        'clients': 'إدارة المحلات الكبرى والزبائن',
+                        'stock': 'متابعة المخزون والمواد الغذائية',
+                        'orders': 'سجل الطلبيات ووصفات التسليم',
+                        'returns': 'سجل المرتجعات والسلع التالفة'
+                    };
+                    return titles[this.currentTab] || '';
+                },
+
+                totalRevenue() {
+                    return this.orders.reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0);
+                },
+
+                totalReturnsCount() {
+                    return this.returnsList.reduce((sum, r) => sum + (Number(r.qty) || 0), 0);
+                },
+
+                openClientModal() {
+                    this.newClient = { name: '', manager: '', phone: '', address: '' };
+                    this.showClientModal = true;
+                },
+
+                saveClient() {
+                    if (!this.newClient.name) return;
+                    this.clients.push({ id: Date.now(), ...this.newClient });
+                    this.showClientModal = false;
+                },
+
+                deleteClient(id) {
+                    if (confirm('هل أنت متأكد من حذف هذا المحل؟')) {
+                        this.clients = this.clients.filter(c => c.id !== id);
+                    }
+                },
+
+                updateStock(item) {
+                    if (!item.addQty || item.addQty <= 0) return;
+                    item.quantity += Number(item.addQty);
+                    item.addQty = 0;
+                },
+
+                openOrderModal() {
+                    this.newOrder = { clientName: '', product: '', qty: '', totalPrice: '' };
+                    this.showOrderModal = true;
+                },
+
+                saveOrder() {
+                    if (!this.newOrder.clientName || !this.newOrder.product || !this.newOrder.qty) return;
+                    const dateStr = new Date().toISOString().split('T')[0];
+                    const newId = Math.floor(100 + Math.random() * 900);
+                    this.orders.push({ id: newId, date: dateStr, ...this.newOrder });
+                    this.showOrderModal = false;
+                },
+
+                deleteOrder(id) {
+                    if (confirm('هل تريد حذف هذا الوصل؟')) {
+                        this.orders = this.orders.filter(o => o.id !== id);
+                    }
+                },
+
+                openReturnModal() {
+                    this.newReturn = { clientName: '', product: '', qty: '', reason: '' };
+                    this.showReturnModal = true;
+                },
+
+                saveReturn() {
+                    if (!this.newReturn.clientName || !this.newReturn.product || !this.newReturn.qty) return;
+                    const dateStr = new Date().toISOString().split('T')[0];
+                    this.returnsList.push({ id: Date.now(), date: dateStr, ...this.newReturn });
+                    this.showReturnModal = false;
+                },
+
+                deleteReturn(id) {
+                    if (confirm('هل تريد حذف سجل المرتجع هذا؟')) {
+                        this.returnsList = this.returnsList.filter(r => r.id !== id);
+                    }
+                },
+
+                printInvoice(order) {
+                    const printWindow = window.open('', '_blank', 'width=800,height=600');
+                    if (!printWindow) {
+                        alert("يرجى السماح بفتح النوافذ المنبثقة (Pop-ups) لطباعة الوصل.");
+                        return;
+                    }
+                    const html = `<!DOCTYPE html>
+                    <html dir="rtl">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>وصل تسليم - Bon de Livraison #${order.id}</title>
+                        <style>
+                            body { font-family: 'Amiri', Tahoma, sans-serif; padding: 30px; color: #1e293b; background: #fff; }
+                            .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
+                            .title { font-size: 24px; font-weight: bold; color: #0f172a; margin: 0; }
+                            .sub-title { font-size: 14px; color: #64748b; margin-top: 5px; }
+                            .info-box { display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 30px; }
+                            th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: center; font-size: 15px; }
+                            th { background: #f1f5f9; color: #334155; }
+                            .total { text-align: left; font-size: 18px; font-weight: bold; margin-top: 15px; }
+                            .footer { display: flex; justify-content: space-between; margin-top: 60px; font-weight: bold; font-size: 16px; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <div class="title">مؤسسة توريد وتوزيع البيض والسمان</div>
+                            <div class="sub-title">Bon de Livraison / وصل تسليم بضاعة</div>
+                        </div>
+                        <div class="info-box">
+                            <div>رقم الوصل: #BL-${order.id}</div>
+                            <div>التاريخ: ${order.date}</div>
+                            <div>اسم المحل: ${order.clientName}</div>
+                        </div>
+                        <table>
+                            <thead>
+                               <tr>
+                                   <th>المنتج</th>
+                                   <th>الكمية المسلمة</th>
+                                   <th>السعر الإجمالي (DZD)</th>
+                               </tr>
+                            </thead>
+                            <tbody>
+                               <tr>
+                                   <td><b>${order.product}</b></td>
+                                   <td><b>${order.qty}</b></td>
+                                   <td><b>${order.totalPrice} DZD</b></td>
+                               </tr>
+                            </tbody>
+                        </table>
+                        <div class="total">المبلغ الإجمالي المستحق: ${order.totalPrice} DZD</div>
+                        <div class="footer">
+                            <div>توقيع المورد (المؤسسة)</div>
+                            <div>توقيع واستلام الزبون (المحل)</div>
+                        </div>
+                        <script>
+                            window.onload = function() { window.print(); }
+                        <' + '/script>
+                    </body>
+                    </html>`;
+                    printWindow.document.open();
+                    printWindow.document.write(html);
+                    printWindow.document.close();
+                },
+
+                exportExcel() {
+                    const ws = XLSX.utils.json_to_sheet(this.orders);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Bons_de_Livraison");
+                    XLSX.writeFile(wb, "Rapport_Bons_Livraison.xlsx");
+                }
+            }
+        }
+    </script>
+</body>
+</html>
