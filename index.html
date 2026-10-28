@@ -96,7 +96,7 @@
                     </div>
                 </div>
 
-                <!-- 2. Clients (قائمة المحلات بدون إجراءات) -->
+                <!-- 2. Clients -->
                 <div x-show="currentTab === 'clients'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">قائمة المحلات التجارية</h3>
@@ -129,7 +129,7 @@
                     </div>
                 </div>
 
-                <!-- 3. Products (المنتجات بدون إجراءات) -->
+                <!-- 3. Products -->
                 <div x-show="currentTab === 'products'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">إدارة المنتجات وأسعار الشراء والبيع</h3>
@@ -160,7 +160,7 @@
                     </div>
                 </div>
 
-                <!-- 4. Stock (المخزون وتنبيهات النفاد وتحديد كمية التنبيه) -->
+                <!-- 4. Stock -->
                 <div x-show="currentTab === 'stock'" class="space-y-4">
                     <h3 class="text-xl font-bold text-slate-800">متابعة المخزون وتحديد كمية التنبيه عند النفاذ</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -178,13 +178,11 @@
                                     <p class="text-3xl font-extrabold text-amber-600 mt-1" x-text="item.quantity"></p>
                                 </div>
                                 
-                                <!-- تحديد كمية التنبيه عند النفاذ -->
                                 <div class="bg-slate-50 p-3 rounded-xl border space-y-1">
                                     <label class="text-xs font-bold text-slate-600">حدد كمية التنبيه عند النفاد:</label>
                                     <input type="number" x-model.number="item.alertLimit" @change="updateStockLimit(item)" class="w-full border p-2 rounded-lg text-xs bg-white outline-none font-bold text-amber-700">
                                 </div>
 
-                                <!-- التنبيه في حالة نقص السلعة -->
                                 <template x-if="item.quantity <= item.alertLimit">
                                     <div class="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl font-bold text-center animate-pulse">
                                         ⚠️ تنبيه خطير: كمية السلعة نقصت ووصلت للحد الأدنى (أو أقل من حد التنبيه المحدد)!
@@ -192,7 +190,7 @@
                                 </template>
 
                                 <div class="flex gap-2 pt-2">
-                                    <input type="number" x-model.number="item.addQty" placeholder="إضافة كمية" class="border p-2 rounded-xl text-xs w-28 outline-none focus:ring-2 focus:ring-amber-500">
+                                    <input type="number" x-model.number="item.addQty" placeholder="إضافة كمية" class="border p-2 rounded-lg text-xs w-28 outline-none focus:ring-2 focus:ring-amber-500">
                                     <button @click="updateStock(item)" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex-1">تحديث المخزون</button>
                                 </div>
                             </div>
@@ -200,7 +198,7 @@
                     </div>
                 </div>
 
-                <!-- 5. Orders (سجل الوصولات متعددة المنتجات) -->
+                <!-- 5. Orders -->
                 <div x-show="currentTab === 'orders'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">سجل الوصولات (مرتبة حسب التاريخ والوقت)</h3>
@@ -245,7 +243,7 @@
                     </div>
                 </div>
 
-                <!-- 6. Returns (المرتجعات والتالف مع الساعة وزر الحفظ والتعديل والإلغاء) -->
+                <!-- 6. Returns -->
                 <div x-show="currentTab === 'returns'" class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">سجل العلب والمنتجات التالفة أو المرتجعة</h3>
@@ -318,7 +316,7 @@
         </div>
     </div>
 
-    <!-- Order / Invoice Modal (متعدد المنتجات) -->
+    <!-- Order Modal -->
     <div x-show="showOrderModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-slate-800">فتح وصل تسليم جديد</h3>
@@ -363,7 +361,7 @@
         </div>
     </div>
 
-    <!-- Return Modal (مع أزرار الحفظ والتعديل والإلغاء) -->
+    <!-- Return Modal -->
     <div x-show="showReturnModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
             <h3 class="text-lg font-bold text-slate-800" x-text="isEditReturn ? 'تعديل مرتجع' : 'تسجيل سلعة تالفة أو مرتجعة'"></h3>
@@ -674,3 +672,4 @@
     </script>
 </body>
 </html>
+
