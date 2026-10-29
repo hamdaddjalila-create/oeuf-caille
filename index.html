@@ -93,7 +93,7 @@
 
                 <!-- Stock View -->
                 <div id="view-stock" class="view-section space-y-4 hidden">
-                    <h3 class="text-xl font-bold">متابعة المخزون والحد التنبيهي (بالأحمر عند النقص)</h3>
+                    <h3 class="text-xl font-bold">متابعة المخزون والتنبيهات (بالأحمر عند النقص)</h3>
                     <div id="stock-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
 
@@ -135,8 +135,7 @@
     <!-- Client Modal -->
     <div id="modal-client" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 id="client-modal-title" class="text-lg font-bold">إضافة محل / مورد جديد</h3>
-            <input type="hidden" id="client-edit-id">
+            <h3 class="text-lg font-bold">إضافة محل / مورد جديد</h3>
             <input type="text" id="client-name" placeholder="اسم المحل أو المورد" class="w-full border p-3 rounded-xl text-sm outline-none">
             <input type="text" id="client-manager" placeholder="اسم المسؤول" class="w-full border p-3 rounded-xl text-sm outline-none">
             <input type="text" id="client-phone" placeholder="رقم الهاتف" class="w-full border p-3 rounded-xl text-sm outline-none">
@@ -148,8 +147,7 @@
     <!-- Product Modal -->
     <div id="modal-product" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 id="product-modal-title" class="text-lg font-bold">إضافة منتج جديد</h3>
-            <input type="hidden" id="product-edit-id">
+            <h3 class="text-lg font-bold">إضافة منتج جديد</h3>
             <input type="text" id="prod-name" placeholder="اسم المنتج" class="w-full border p-3 rounded-xl text-sm outline-none">
             <input type="number" id="prod-purchase" placeholder="سعر الشراء (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none">
             <input type="number" id="prod-sell" placeholder="سعر البيع للمحلات (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none">
@@ -242,9 +240,22 @@
 
         window.switchTab = function(tabId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById('view-' + tabId).classList.remove('hidden');
+            const target = document.getElementById('view-' + tabId);
+            if(target) target.classList.remove('hidden');
+
             document.querySelectorAll('aside nav button').forEach(btn => btn.className = "w-full text-left px-4 py-2.5 rounded-xl font-medium transition text-slate-300 hover:bg-slate-800");
-            document.getElementById('nav-' + tabId).className = "w-full text-left px-4 py-2.5 rounded-xl font-medium transition bg-amber-600 text-white";
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if(activeBtn) activeBtn.className = "w-full text-left px-4 py-2.5 rounded-xl font-medium transition bg-amber-600 text-white";
+
+            const titles = {
+                'dashboard': 'لوحة التحكم العامة',
+                'clients': 'قائمة المحلات التجارية والموردين',
+                'products': 'إدارة المنتجات والأسعار',
+                'stock': 'متابعة المخزون والتنبيهات',
+                'orders': 'سجل الوصولات (Bons)',
+                'returns': 'سجل المرتجعات والتالف'
+            };
+            if(document.getElementById('page-title')) document.getElementById('page-title').innerText = titles[tabId] || '';
         }
 
         window.openModal = function(name) {
