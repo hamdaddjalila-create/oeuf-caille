@@ -4,25 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oeuf Caille - Gestion de Distribution</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-arabic { font-family: 'Amiri', serif; }
-    </style>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
 <body class="bg-slate-100 text-slate-800">
-
-    <!-- Main Layout -->
     <div class="flex h-screen overflow-hidden">
-        
-        <!-- Sidebar -->
         <aside class="w-72 bg-slate-900 text-white flex flex-col justify-between">
             <div>
                 <div class="p-6 border-b border-slate-800 flex items-center gap-3">
@@ -41,205 +29,86 @@
                     <button onclick="switchTab('returns')" id="nav-returns" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition text-slate-300 hover:bg-slate-800">🔄 المرتجعات والتالف</button>
                 </nav>
             </div>
-            <div class="p-4 border-t border-slate-800 text-xs text-slate-400 text-center">
-                Tel: 0555688855 📞
-            </div>
+            <div class="p-4 border-t border-slate-800 text-xs text-slate-400 text-center">Tel: 0555688855 📞</div>
         </aside>
-
-        <!-- Main Content Area -->
         <div class="flex-1 flex flex-col overflow-y-auto">
-            
-            <!-- Top Header -->
             <header class="bg-white shadow-sm border-b h-16 flex items-center justify-between px-6">
                 <h2 id="page-title" class="text-lg font-bold text-slate-700">لوحة التحكم العامة - Oeuf Caille</h2>
-                <div class="flex items-center gap-3">
-                    <span class="bg-amber-50 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold border border-amber-200">📞 0555688855</span>
-                </div>
+                <span class="bg-amber-50 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold border border-amber-200">📞 0555688855</span>
             </header>
-
-            <!-- Dynamic Views -->
             <main class="p-6 space-y-6">
-                
-                <!-- 1. Dashboard -->
                 <div id="view-dashboard" class="space-y-6 view-section">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div class="bg-white p-5 rounded-2xl shadow-sm border flex items-center justify-between">
-                            <div>
-                                <p class="text-xs text-slate-500 font-medium">قائمة المحلات</p>
-                                <h3 id="stat-clients" class="text-2xl font-bold mt-1 text-slate-800">0</h3>
-                            </div>
+                            <div><p class="text-xs text-slate-500 font-medium">قائمة المحلات</p><h3 id="stat-clients" class="text-2xl font-bold mt-1 text-slate-800">0</h3></div>
                             <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl">🏪</div>
                         </div>
                         <div class="bg-white p-5 rounded-2xl shadow-sm border flex items-center justify-between">
-                            <div>
-                                <p class="text-xs text-slate-500 font-medium">إجمالي الوصولات</p>
-                                <h3 id="stat-orders" class="text-2xl font-bold mt-1 text-slate-800">0</h3>
-                            </div>
+                            <div><p class="text-xs text-slate-500 font-medium">إجمالي الوصولات</p><h3 id="stat-orders" class="text-2xl font-bold mt-1 text-slate-800">0</h3></div>
                             <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">🛒</div>
                         </div>
                         <div class="bg-emerald-50 border-emerald-200 p-5 rounded-2xl shadow-sm border flex items-center justify-between">
-                            <div>
-                                <p class="text-xs text-emerald-700 font-bold">المبيعات الإجمالية</p>
-                                <h3 id="stat-revenue" class="text-xl font-bold mt-1 text-emerald-700">0 DZD</h3>
-                            </div>
+                            <div><p class="text-xs text-emerald-700 font-bold">المبيعات الإجمالية</p><h3 id="stat-revenue" class="text-xl font-bold mt-1 text-emerald-700">0 DZD</h3></div>
                             <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-xl shadow">💵</div>
                         </div>
                         <div class="bg-red-50 border-red-200 p-5 rounded-2xl shadow-sm border flex items-center justify-between">
-                            <div>
-                                <p class="text-xs text-red-700 font-bold">المرتجعات والتالف</p>
-                                <h3 id="stat-returns" class="text-xl font-bold mt-1 text-red-700">0 وحدة</h3>
-                            </div>
+                            <div><p class="text-xs text-red-700 font-bold">المرتجعات والتالف</p><h3 id="stat-returns" class="text-xl font-bold mt-1 text-red-700">0 وحدة</h3></div>
                             <div class="w-12 h-12 bg-red-600 text-white rounded-xl flex items-center justify-center text-xl shadow">🔄</div>
                         </div>
                     </div>
                 </div>
-
-                <!-- 2. Clients -->
                 <div id="view-clients" class="space-y-4 view-section hidden">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-slate-800">قائمة المحلات التجارية والموردين</h3>
-                        <button onclick="openModal('client')" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ إضافة محل جديد</button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase tracking-wider">
-                                    <th class="p-4">اسم المحل</th>
-                                    <th class="p-4">المسؤول</th>
-                                    <th class="p-4">رقم الهاتف</th>
-                                    <th class="p-4">العنوان</th>
-                                    <th class="p-4">تاريخ الإضافة</th>
-                                    <th class="p-4 text-center">إجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="clients-table-body" class="divide-y text-sm"></tbody>
-                        </table>
-                    </div>
+                    <div class="flex justify-between items-center"><h3 class="text-xl font-bold text-slate-800">قائمة المحلات التجارية والموردين</h3><button onclick="openModal('client')" class="bg-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow">+ إضافة محل جديد</button></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase"><th class="p-4">اسم المحل</th><th class="p-4">المسؤول</th><th class="p-4">رقم الهاتف</th><th class="p-4">العنوان</th><th class="p-4">تاريخ الإضافة</th><th class="p-4 text-center">إجراءات</th></tr></thead><tbody id="clients-table-body" class="divide-y text-sm"></tbody></table></div>
                 </div>
-
-                <!-- 3. Products -->
                 <div id="view-products" class="space-y-4 view-section hidden">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-slate-800">إدارة المنتجات وأسعار الشراء والبيع</h3>
-                        <button onclick="openModal('product')" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ إضافة منتج جديد</button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase tracking-wider">
-                                    <th class="p-4">اسم المنتج</th>
-                                    <th class="p-4">سعر الشراء (DZD)</th>
-                                    <th class="p-4">سعر البيع للمحلات (DZD)</th>
-                                    <th class="p-4">تاريخ الإضافة</th>
-                                    <th class="p-4 text-center">إجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="products-table-body" class="divide-y text-sm"></tbody>
-                        </table>
-                    </div>
+                    <div class="flex justify-between items-center"><h3 class="text-xl font-bold text-slate-800">إدارة المنتجات وأسعار الشراء والبيع</h3><button onclick="openModal('product')" class="bg-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow">+ إضافة منتج جديد</button></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase"><th class="p-4">اسم المنتج</th><th class="p-4">سعر الشراء (DZD)</th><th class="p-4">سعر البيع للمحلات (DZD)</th><th class="p-4">تاريخ الإضافة</th><th class="p-4 text-center">إجراءات</th></tr></thead><tbody id="products-table-body" class="divide-y text-sm"></tbody></table></div>
                 </div>
-
-                <!-- 4. Stock -->
                 <div id="view-stock" class="space-y-4 view-section hidden">
                     <h3 class="text-xl font-bold text-slate-800">متابعة المخزون وتحديد كمية التنبيه والتحكم المباشر</h3>
                     <div id="stock-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
-
-                <!-- 5. Orders -->
                 <div id="view-orders" class="space-y-4 view-section hidden">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-slate-800">سجل الوصولات (مرتبة حسب التاريخ والوقت)</h3>
-                        <div class="flex gap-2">
-                            <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">📊 تصدير Excel</button>
-                            <button onclick="openModal('order')" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ فتح وصل تسليم جديد</button>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase tracking-wider">
-                                    <th class="p-4">رقم الوصل</th>
-                                    <th class="p-4">تاريخ وساعة الإصدار</th>
-                                    <th class="p-4">اسم المحل التجاري</th>
-                                    <th class="p-4">المنتجات والكميات</th>
-                                    <th class="p-4">المبلغ الإجمالي (DZD)</th>
-                                    <th class="p-4 text-center">إجراءات وطباعة</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orders-table-body" class="divide-y text-sm"></tbody>
-                        </table>
-                    </div>
+                    <div class="flex justify-between items-center"><h3 class="text-xl font-bold text-slate-800">سجل الوصولات</h3><div class="flex gap-2"><button onclick="exportExcel()" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow">📊 تصدير Excel</button><button onclick="openModal('order')" class="bg-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow">+ فتح وصل تسليم جديد</button></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase"><th class="p-4">رقم الوصل</th><th class="p-4">تاريخ وساعة الإصدار</th><th class="p-4">اسم المحل التجاري</th><th class="p-4">المنتجات والكميات</th><th class="p-4">المبلغ الإجمالي (DZD)</th><th class="p-4 text-center">إجراءات وطباعة</th></tr></thead><tbody id="orders-table-body" class="divide-y text-sm"></tbody></table></div>
                 </div>
-
-                <!-- 6. Returns -->
                 <div id="view-returns" class="space-y-4 view-section hidden">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-slate-800">سجل العلب والمنتجات التالفة أو المرتجعة</h3>
-                        <button onclick="openModal('return')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow">+ تسجيل مرتجع جديد</button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase tracking-wider">
-                                    <th class="p-4">تاريخ وساعة الإضافة</th>
-                                    <th class="p-4">اسم المحل</th>
-                                    <th class="p-4">المنتج</th>
-                                    <th class="p-4">الكمية المرتجعة</th>
-                                    <th class="p-4">السبب</th>
-                                    <th class="p-4 text-center">إجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="returns-table-body" class="divide-y text-sm"></tbody>
-                        </table>
-                    </div>
+                    <div class="flex justify-between items-center"><h3 class="text-xl font-bold text-slate-800">سجل المرتجعات والتالف</h3><button onclick="openModal('return')" class="bg-red-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow">+ تسجيل مرتجع جديد</button></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase"><th class="p-4">تاريخ الإضافة</th><th class="p-4">اسم المحل</th><th class="p-4">المنتج</th><th class="p-4">الكمية</th><th class="p-4">السبب</th><th class="p-4 text-center">إجراءات</th></tr></thead><tbody id="returns-table-body" class="divide-y text-sm"></tbody></table></div>
                 </div>
-
             </main>
         </div>
     </div>
 
     <!-- Modals -->
-    <!-- Client Modal -->
     <div id="modal-client" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 id="client-modal-title" class="text-lg font-bold text-slate-800">إضافة محل تجاري جديد</h3>
-            <input type="text" id="client-name" placeholder="اسم المحل التجاري" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
-            <input type="text" id="client-manager" placeholder="اسم المسؤول" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
-            <input type="text" id="client-phone" placeholder="رقم الهاتف" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
-            <input type="text" id="client-address" placeholder="العنوان" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeModal('client')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
-                <button onclick="saveClient()" class="bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ</button>
-            </div>
+            <h3 class="text-lg font-bold text-slate-800">إضافة محل تجاري جديد</h3>
+            <input type="text" id="client-name" placeholder="اسم المحل التجاري" class="w-full border p-3 rounded-xl text-sm outline-none">
+            <input type="text" id="client-manager" placeholder="اسم المسؤول" class="w-full border p-3 rounded-xl text-sm outline-none">
+            <input type="text" id="client-phone" placeholder="رقم الهاتف" class="w-full border p-3 rounded-xl text-sm outline-none">
+            <input type="text" id="client-address" placeholder="العنوان" class="w-full border p-3 rounded-xl text-sm outline-none">
+            <div class="flex justify-end gap-2 pt-2"><button onclick="closeModal('client')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="saveClient()" class="bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold">حفظ</button></div>
         </div>
     </div>
 
-    <!-- Product Modal -->
     <div id="modal-product" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 id="prod-modal-title" class="text-lg font-bold text-slate-800">إضافة منتج جديد</h3>
-            <input type="text" id="prod-name" placeholder="اسم المنتج" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
-            <input type="number" id="prod-purchase" placeholder="سعر الشراء (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
-            <input type="number" id="prod-sell" placeholder="سعر البيع للمحلات (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeModal('product')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
-                <button onclick="saveProduct()" class="bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ</button>
-            </div>
+            <h3 class="text-lg font-bold text-slate-800">إضافة منتج جديد</h3>
+            <input type="text" id="prod-name" placeholder="اسم المنتج" class="w-full border p-3 rounded-xl text-sm outline-none">
+            <input type="number" id="prod-purchase" placeholder="سعر الشراء (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none">
+            <input type="number" id="prod-sell" placeholder="سعر البيع للمحلات (DZD)" class="w-full border p-3 rounded-xl text-sm outline-none">
+            <div class="flex justify-end gap-2 pt-2"><button onclick="closeModal('product')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="saveProduct()" class="bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold">حفظ</button></div>
         </div>
     </div>
 
-    <!-- Order Modal -->
     <div id="modal-order" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-bold text-slate-800">فتح وصل تسليم جديد (عدة منتجات)</h3>
-            <select id="order-client" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 bg-white">
-                <option value="">اختر المحل التجاري للتوريد...</option>
-            </select>
+            <h3 class="text-lg font-bold text-slate-800">فتح وصل تسليم جديد</h3>
+            <select id="order-client" class="w-full border p-3 rounded-xl text-sm bg-white outline-none"><option value="">اختر المحل التجاري للتوريد...</option></select>
             <div class="border-t border-b py-3 space-y-3">
-                <div class="flex justify-between items-center">
-                    <span class="font-bold text-sm text-slate-700">المنتجات والكميات المسلمة:</span>
-                    <button onclick="addOrderItemRow()" class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">+ إضافة منتج للوصل</button>
-                </div>
+                <div class="flex justify-between items-center"><span class="font-bold text-sm text-slate-700">المنتجات والكميات المسلمة:</span><button onclick="addOrderItemRow()" class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">+ إضافة منتج</button></div>
                 <div id="order-items-container" class="space-y-2"></div>
             </div>
             <div class="flex justify-between items-center font-bold text-base bg-amber-50 p-3 rounded-xl border border-amber-200">
@@ -247,33 +116,24 @@
                 <span id="order-total-display" class="text-amber-700">0 DZD</span>
             </div>
             <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeModal('order')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
-                <button onclick="saveOrder(false)" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ الوصل فقط</button>
-                <button onclick="saveOrder(true)" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">🖨️ حفظ وطباعة الوصل</button>
+                <button onclick="closeModal('order')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button>
+                <button onclick="saveOrder(false)" class="bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold">حفظ الوصل فقط</button>
+                <button onclick="saveOrder(true)" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-bold">🖨️ حفظ وطباعة</button>
             </div>
         </div>
     </div>
 
-    <!-- Return Modal -->
     <div id="modal-return" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 id="return-modal-title" class="text-lg font-bold text-slate-800">تسجيل سلعة تالفة أو مرتجعة</h3>
-            <select id="return-client" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500 bg-white">
-                <option value="">اختر المحل...</option>
-            </select>
-            <select id="return-product" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500 bg-white">
-                <option value="">اختر المنتج التالف...</option>
-            </select>
-            <input type="number" id="return-qty" placeholder="الكمية المرتجعة" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500">
-            <input type="text" id="return-reason" placeholder="السبب (كسر، فساد...)" class="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-500">
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeModal('return')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm font-semibold">إلغاء</button>
-                <button onclick="saveReturn()" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">حفظ</button>
-            </div>
+            <h3 class="text-lg font-bold text-slate-800">تسجيل سلعة تالفة أو مرتجعة</h3>
+            <select id="return-client" class="w-full border p-3 rounded-xl text-sm bg-white outline-none"><option value="">اختر المحل...</option></select>
+            <select id="return-product" class="w-full border p-3 rounded-xl text-sm bg-white outline-none"><option value="">اختر المنتج...</option></select>
+            <input type="number" id="return-qty" placeholder="الكمية المرتجعة" class="w-full border p-3 rounded-xl text-sm outline-none">
+            <input type="text" id="return-reason" placeholder="السبب (كسر، فساد...)" class="w-full border p-3 rounded-xl text-sm outline-none">
+            <div class="flex justify-end gap-2 pt-2"><button onclick="closeModal('return')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="saveReturn()" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm font-bold">حفظ</button></div>
         </div>
     </div>
 
-    <!-- App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
@@ -292,7 +152,7 @@
         const db = getFirestore(app);
 
         let clients = [], products = [], stock = [], orders = [], returnsList = [];
-        let editingReturnId = null, editingClientId = null, editingProdId = null;
+        let editingClientId = null, editingProdId = null;
 
         function getDateTime() {
             const now = new Date();
@@ -302,27 +162,27 @@
         onSnapshot(collection(db, "clients"), (snap) => {
             clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderClients(); renderDashboard(); populateSelects();
-        }, (err) => console.error(err));
+        });
 
         onSnapshot(collection(db, "products"), (snap) => {
             products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderProducts(); populateSelects();
-        }, (err) => console.error(err));
+        });
 
         onSnapshot(collection(db, "stock"), (snap) => {
             stock = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderStock();
-        }, (err) => console.error(err));
+        });
 
         onSnapshot(collection(db, "orders"), (snap) => {
             orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderOrders(); renderDashboard();
-        }, (err) => console.error(err));
+        });
 
         onSnapshot(collection(db, "returns"), (snap) => {
             returnsList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderReturns(); renderDashboard();
-        }, (err) => console.error(err));
+        });
 
         window.switchTab = function(tabId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
@@ -356,7 +216,7 @@
             if(name === 'order') {
                 const container = document.getElementById('order-items-container');
                 if(container) container.innerHTML = "";
-                addOrderItemRow();
+                window.addOrderItemRow();
             }
         }
 
@@ -365,24 +225,6 @@
             if(modal) {
                 modal.classList.remove('flex');
                 modal.classList.add('hidden');
-            }
-            if(name === 'client') {
-                editingClientId = null;
-                document.getElementById('client-name').value = '';
-                document.getElementById('client-manager').value = '';
-                document.getElementById('client-phone').value = '';
-                document.getElementById('client-address').value = '';
-            }
-            if(name === 'product') {
-                editingProdId = null;
-                document.getElementById('prod-name').value = '';
-                document.getElementById('prod-purchase').value = '';
-                document.getElementById('prod-sell').value = '';
-            }
-            if(name === 'return') {
-                editingReturnId = null;
-                document.getElementById('return-qty').value = '';
-                document.getElementById('return-reason').value = '';
             }
         }
 
@@ -417,14 +259,13 @@
             if(!tbody) return;
             tbody.innerHTML = clients.map(c => `
                 <tr>
-                    <td class="p-4 font-semibold text-slate-800">${c.name}</td>
+                    <td class="p-4 font-semibold text-slate-800">${c.name || ''}</td>
                     <td class="p-4 text-slate-600">${c.manager || ''}</td>
                     <td class="p-4 text-slate-600 font-mono">${c.phone || ''}</td>
                     <td class="p-4 text-slate-500">${c.address || ''}</td>
                     <td class="p-4 text-slate-400 text-xs font-mono">${c.createdAt || ''}</td>
                     <td class="p-4 text-center space-x-2">
-                        <button onclick="editClient('${c.id}', '${c.name}', '${c.manager || ''}', '${c.phone || ''}', '${c.address || ''}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">✏️ تعديل</button>
-                        <button onclick="deleteClient('${c.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
+                        <button onclick="deleteClient('${c.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100">🗑️ حذف</button>
                     </td>
                 </tr>
             `).join('');
@@ -435,13 +276,12 @@
             if(!tbody) return;
             tbody.innerHTML = products.map(p => `
                 <tr>
-                    <td class="p-4 font-semibold text-slate-800">${p.name}</td>
-                    <td class="p-4 text-slate-600 font-mono">${p.purchasePrice} DZD</td>
-                    <td class="p-4 text-emerald-600 font-bold font-mono">${p.sellPrice} DZD</td>
+                    <td class="p-4 font-semibold text-slate-800">${p.name || ''}</td>
+                    <td class="p-4 text-slate-600 font-mono">${p.purchasePrice || 0} DZD</td>
+                    <td class="p-4 text-emerald-600 font-bold font-mono">${p.sellPrice || 0} DZD</td>
                     <td class="p-4 text-slate-400 text-xs font-mono">${p.createdAt || ''}</td>
                     <td class="p-4 text-center space-x-2">
-                        <button onclick="editProduct('${p.id}', '${p.name}', '${p.purchasePrice}', '${p.sellPrice}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">✏️ تعديل</button>
-                        <button onclick="deleteProduct('${p.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
+                        <button onclick="deleteProduct('${p.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100">🗑️ حذف</button>
                     </td>
                 </tr>
             `).join('');
@@ -451,33 +291,18 @@
             const grid = document.getElementById('stock-grid');
             if(!grid) return;
             grid.innerHTML = stock.map(item => {
-                let isAlert = Number(item.quantity) <= Number(item.alertLimit);
-                let cardClass = isAlert 
-                    ? "bg-red-50 border-2 border-red-400 p-6 rounded-2xl shadow-sm space-y-4 transition animate-pulse" 
-                    : "bg-white border p-6 rounded-2xl shadow-sm space-y-4 transition";
-                
+                let isAlert = Number(item.quantity || 0) <= Number(item.alertLimit || 0);
+                let cardClass = isAlert ? "bg-red-50 border-2 border-red-400 p-6 rounded-2xl shadow-sm space-y-4 animate-pulse" : "bg-white border p-6 rounded-2xl shadow-sm space-y-4";
                 return `
                     <div class="${cardClass}">
                         <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-lg text-slate-800">${item.name}</h4>
-                                <span class="text-[11px] text-slate-400 font-mono">آخر تحديث: ${item.updatedAt || ''}</span>
-                            </div>
+                            <div><h4 class="font-bold text-lg text-slate-800">${item.name || ''}</h4><span class="text-[11px] text-slate-400 font-mono">آخر تحديث: ${item.updatedAt || ''}</span></div>
                             <span class="text-2xl">📦</span>
                         </div>
-                        <div>
-                            <p class="text-xs text-slate-500">الكمية المتوفرة حالياً (تحكم مباشر):</p>
-                            <input type="number" value="${item.quantity}" onchange="updateDirectStock('${item.id}', this.value)" class="w-full border-2 p-2 rounded-xl text-2xl font-extrabold text-amber-600 mt-1 bg-white outline-none">
-                        </div>
-                        <div class="bg-white/80 p-3 rounded-xl border space-y-1">
-                            <label class="text-xs font-bold text-slate-600">كمية التنبيه عند النفاد:</label>
-                            <input type="number" value="${item.alertLimit}" onchange="updateStockLimit('${item.id}', this.value)" class="w-full border p-2 rounded-lg text-xs bg-white outline-none font-bold text-amber-700">
-                        </div>
-                        ${isAlert ? `<div class="bg-red-600 text-white text-xs p-2.5 rounded-xl font-bold text-center shadow">⚠️ تنبيه: نقص في السلعة وصل للحد المسموح!</div>` : ''}
-                        <div class="flex gap-2 pt-2">
-                            <input type="number" id="add-qty-${item.id}" placeholder="إضافة كمية" class="border p-2 rounded-lg text-xs w-28 outline-none bg-white">
-                            <button onclick="addStockQty('${item.id}', '${item.quantity}')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex-1 shadow">إضافة للمخزون</button>
-                        </div>
+                        <div><p class="text-xs text-slate-500">الكمية المتوفرة حالياً:</p><input type="number" value="${item.quantity || 0}" onchange="updateDirectStock('${item.id}', this.value)" class="w-full border-2 p-2 rounded-xl text-2xl font-extrabold text-amber-600 mt-1 bg-white outline-none"></div>
+                        <div class="bg-white/80 p-3 rounded-xl border space-y-1"><label class="text-xs font-bold text-slate-600">كمية التنبيه:</label><input type="number" value="${item.alertLimit || 0}" onchange="updateStockLimit('${item.id}', this.value)" class="w-full border p-2 rounded-lg text-xs bg-white outline-none font-bold text-amber-700"></div>
+                        ${isAlert ? `<div class="bg-red-600 text-white text-xs p-2.5 rounded-xl font-bold text-center">⚠️ تنبيه: نقص في السلعة!</div>` : ''}
+                        <div class="flex gap-2 pt-2"><input type="number" id="add-qty-${item.id}" placeholder="إضافة كمية" class="border p-2 rounded-lg text-xs w-28 outline-none bg-white"><button onclick="addStockQty('${item.id}', '${item.quantity || 0}')" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold flex-1">إضافة للمخزون</button></div>
                     </div>
                 `;
             }).join('');
@@ -488,17 +313,17 @@
             if(!tbody) return;
             let sorted = [...orders].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
             tbody.innerHTML = sorted.map(o => {
-                let itemsStr = (o.items || []).map(i => `<div class="text-xs">▪️ ${i.product} (الكمية: ${i.qty} - السعر: ${i.price} DZD)</div>`).join('');
+                let itemsStr = (o.items || []).map(i => `<div class="text-xs">▪️ ${i.product || ''} (الكمية: ${i.qty || 0} - السعر: ${i.price || 0} DZD)</div>`).join('');
                 return `
                     <tr>
-                        <td class="p-4 font-mono font-bold text-amber-600">#BL-${o.displayId || o.id}</td>
+                        <td class="p-4 font-mono font-bold text-amber-600">#BL-${o.displayId || o.id || ''}</td>
                         <td class="p-4 text-slate-500 font-mono text-xs">${o.createdAt || ''}</td>
                         <td class="p-4 font-semibold text-slate-800">${o.clientName || ''}</td>
                         <td class="p-4 text-slate-600">${itemsStr}</td>
                         <td class="p-4 text-emerald-600 font-bold">${o.totalPrice || 0} DZD</td>
                         <td class="p-4 text-center space-x-2">
-                            <button onclick='printInvoice(${JSON.stringify(o)})' class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">🖨️ طباعة</button>
-                            <button onclick="deleteOrder('${o.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
+                            <button onclick='printInvoice(${JSON.stringify(o)})' class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🖨️ طباعة</button>
+                            <button onclick="deleteOrder('${o.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🗑️ حذف</button>
                         </td>
                     </tr>
                 `;
@@ -515,10 +340,7 @@
                     <td class="p-4 text-red-600 font-bold">${r.product || ''}</td>
                     <td class="p-4 text-slate-800 font-bold">${r.qty || 0}</td>
                     <td class="p-4 text-slate-500">${r.reason || ''}</td>
-                    <td class="p-4 text-center space-x-2">
-                        <button onclick="editReturn('${r.id}', '${r.clientName || ''}', '${r.product || ''}', '${r.qty || 0}', '${r.reason || ''}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100 transition">✏️ تعديل</button>
-                        <button onclick="deleteReturn('${r.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100 transition">🗑️ حذف</button>
-                    </td>
+                    <td class="p-4 text-center"><button onclick="deleteReturn('${r.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🗑️ حذف</button></td>
                 </tr>
             `).join('');
         }
@@ -526,63 +348,29 @@
         window.saveClient = async function() {
             let name = document.getElementById('client-name').value;
             if(!name) return;
-            let data = {
+            await addDoc(collection(db, "clients"), {
                 name, manager: document.getElementById('client-manager').value,
                 phone: document.getElementById('client-phone').value,
                 address: document.getElementById('client-address').value,
                 createdAt: getDateTime()
-            };
-            if(editingClientId) {
-                await updateDoc(doc(db, "clients", editingClientId), data);
-                editingClientId = null;
-            } else {
-                await addDoc(collection(db, "clients"), data);
-            }
-            closeModal('client');
+            });
+            window.closeModal('client');
         }
-        window.editClient = function(id, name, manager, phone, address) {
-            editingClientId = id;
-            openModal('client');
-            document.getElementById('client-name').value = name;
-            document.getElementById('client-manager').value = manager;
-            document.getElementById('client-phone').value = phone;
-            document.getElementById('client-address').value = address;
-        }
-        window.deleteClient = async function(id) {
-            if(confirm('هل تريد حذف هذا المحل أو المورد نهائياً؟')) await deleteDoc(doc(db, "clients", id));
-        }
+        window.deleteClient = async function(id) { if(confirm('حذف هذا المحل؟')) await deleteDoc(doc(db, "clients", id)); }
 
         window.saveProduct = async function() {
             let name = document.getElementById('prod-name').value;
             let sellPrice = Number(document.getElementById('prod-sell').value);
             let purchasePrice = Number(document.getElementById('prod-purchase').value);
             if(!name) return;
-            
-            if(editingProdId) {
-                await updateDoc(doc(db, "products", editingProdId), { name, purchasePrice, sellPrice });
-                editingProdId = null;
-            } else {
-                await addDoc(collection(db, "products"), { name, purchasePrice, sellPrice, createdAt: getDateTime() });
-                await addDoc(collection(db, "stock"), { name, quantity: 0, alertLimit: 10, updatedAt: getDateTime() });
-            }
-            closeModal('product');
+            await addDoc(collection(db, "products"), { name, purchasePrice, sellPrice, createdAt: getDateTime() });
+            await addDoc(collection(db, "stock"), { name, quantity: 0, alertLimit: 10, updatedAt: getDateTime() });
+            window.closeModal('product');
         }
-        window.editProduct = function(id, name, purchasePrice, sellPrice) {
-            editingProdId = id;
-            openModal('product');
-            document.getElementById('prod-name').value = name;
-            document.getElementById('prod-purchase').value = purchasePrice;
-            document.getElementById('prod-sell').value = sellPrice;
-        }
-        window.deleteProduct = async function(id) {
-            if(confirm('هل تريد حذف هذا المنتج؟')) await deleteDoc(doc(db, "products", id));
-        }
+        window.deleteProduct = async function(id) { if(confirm('حذف هذا المنتج؟')) await deleteDoc(doc(db, "products", id)); }
 
         window.updateDirectStock = async function(id, newQty) {
-            await updateDoc(doc(db, "stock", id), {
-                quantity: Number(newQty),
-                updatedAt: getDateTime()
-            });
+            await updateDoc(doc(db, "stock", id), { quantity: Number(newQty), updatedAt: getDateTime() });
         }
         window.updateStockLimit = async function(id, limit) {
             await updateDoc(doc(db, "stock", id), { alertLimit: Number(limit) });
@@ -592,10 +380,7 @@
             if(!inputField) return;
             let add = Number(inputField.value);
             if(!add || add <= 0) return;
-            await updateDoc(doc(db, "stock", id), {
-                quantity: Number(currentQty) + add,
-                updatedAt: getDateTime()
-            });
+            await updateDoc(doc(db, "stock", id), { quantity: Number(currentQty) + add, updatedAt: getDateTime() });
             inputField.value = '';
         }
 
@@ -618,7 +403,7 @@
             let row = select.closest('.order-item-row');
             let price = select.selectedOptions[0].getAttribute('data-price') || 0;
             row.querySelector('.item-price').value = price;
-            calculateOrderTotal();
+            window.calculateOrderTotal();
         }
 
         window.calculateOrderTotal = function() {
@@ -648,22 +433,14 @@
             
             let orderData = { displayId, clientName, items, totalPrice, createdAt: getDateTime() };
             await addDoc(collection(db, "orders"), orderData);
-            closeModal('order');
+            window.closeModal('order');
 
             if(shouldPrint) {
-                printInvoice({ id: displayId, ...orderData });
+                window.printInvoice({ id: displayId, ...orderData });
             }
         }
 
-        window.deleteOrder = async function(docId) {
-            if(confirm('هل تريد حذف هذا الوصل نهائياً؟')) {
-                try {
-                    await deleteDoc(doc(db, "orders", docId));
-                } catch(e) {
-                    alert("خطأ في الحذف: " + e.message);
-                }
-            }
-        }
+        window.deleteOrder = async function(docId) { if(confirm('حذف هذا الوصل؟')) await deleteDoc(doc(db, "orders", docId)); }
 
         window.saveReturn = async function() {
             let clientName = document.getElementById('return-client').value;
@@ -671,39 +448,20 @@
             let qty = Number(document.getElementById('return-qty').value);
             let reason = document.getElementById('return-reason').value;
             if(!clientName || !product || !qty) return;
-
-            let data = { clientName, product, qty, reason };
-            if(editingReturnId) {
-                await updateDoc(doc(db, "returns", editingReturnId), data);
-                editingReturnId = null;
-            } else {
-                data.createdAt = getDateTime();
-                await addDoc(collection(db, "returns"), data);
-            }
-            closeModal('return');
+            await addDoc(collection(db, "returns"), { clientName, product, qty, reason, createdAt: getDateTime() });
+            window.closeModal('return');
         }
 
-        window.editReturn = function(id, client, prod, qty, reason) {
-            editingReturnId = id;
-            openModal('return');
-            document.getElementById('return-client').value = client;
-            document.getElementById('return-product').value = prod;
-            document.getElementById('return-qty').value = qty;
-            document.getElementById('return-reason').value = reason;
-        }
-
-        window.deleteReturn = async function(id) {
-            if(confirm('حذف سجل المرتجع هذا؟')) await deleteDoc(doc(db, "returns", id));
-        }
+        window.deleteReturn = async function(id) { if(confirm('حذف هذا المرتجع؟')) await deleteDoc(doc(db, "returns", id)); }
 
         window.printInvoice = function(order) {
             let printWindow = window.open('', '_blank', 'width=800,height=600');
             let itemsHtml = (order.items || []).map(i => `
                 <tr>
-                    <td><b>${i.product}</b></td>
-                    <td><b>${i.qty}</b></td>
-                    <td><b>${i.price} DZD</b></td>
-                    <td><b>${i.qty * i.price} DZD</b></td>
+                    <td><b>${i.product || ''}</b></td>
+                    <td><b>${i.qty || 0}</b></td>
+                    <td><b>${i.price || 0} DZD</b></td>
+                    <td><b>${(i.qty || 0) * (i.price || 0)} DZD</b></td>
                 </tr>
             `).join('');
 
@@ -711,7 +469,7 @@
                 <html dir="rtl">
                 <head>
                     <meta charset="UTF-8">
-                    <title>وصل تسليم - oeuf caille #${order.displayId || order.id}</title>
+                    <title>وصل تسليم - oeuf caille #${order.displayId || order.id || ''}</title>
                     <style>
                         body { font-family: Tahoma, sans-serif; padding: 30px; color: #1e293b; }
                         .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
@@ -732,7 +490,7 @@
                         <div class="phone">📞 الهاتف: 0555688855</div>
                     </div>
                     <div class="info-box">
-                        <div>رقم الوصل: #${order.displayId || order.id}</div>
+                        <div>رقم الوصل: #${order.displayId || order.id || ''}</div>
                         <div>التاريخ والوقت: ${order.createdAt || ''}</div>
                         <div>المحل التجاري: ${order.clientName || ''}</div>
                     </div>
