@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oeuf Caille - Gestion de Distribution</title>
+    <title>Oeuf Caille - Distribution</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Inter', sans-serif; }</style>
@@ -19,12 +19,12 @@
                         <p class="text-[11px] text-slate-400">Cloud Firebase Pro</p>
                     </div>
                 </div>
-                <nav class="p-4 space-y-1.5">
-                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full text-left px-4 py-2.5 rounded-xl font-medium bg-amber-600 text-white">📊 لوحة التحكم</button>
-                    <button onclick="switchTab('clients')" id="nav-clients" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-300 hover:bg-slate-800">🏪 المحلات والموردين</button>
-                    <button onclick="switchTab('products')" id="nav-products" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-300 hover:bg-slate-800">🏷️ المنتجات والأسعار</button>
-                    <button onclick="switchTab('stock')" id="nav-stock" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-300 hover:bg-slate-800">📦 المخزون والتنبيهات</button>
-                    <button onclick="switchTab('orders')" id="nav-orders" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-300 hover:bg-slate-800">🛒 سجل الوصولات</button>
+                <nav class="p-4 space-y-1">
+                    <button onclick="st('dashboard')" id="nav-dashboard" class="w-full text-left px-4 py-2.5 rounded-xl font-medium bg-amber-600 text-white">📊 لوحة التحكم</button>
+                    <button onclick="st('clients')" id="nav-clients" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-300 hover:bg-slate-800">🏪 المحلات والموردين</button>
+                    <button onclick="st('products')" id="nav-products" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-300 hover:bg-slate-800">🏷️ المنتجات والأسعار</button>
+                    <button onclick="st('stock')" id="nav-stock" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-300 hover:bg-slate-800">📦 المخزون والتنبيهات</button>
+                    <button onclick="st('orders')" id="nav-orders" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-300 hover:bg-slate-800">🛒 سجل الوصولات</button>
                 </nav>
             </div>
             <div class="p-4 border-t border-slate-800 text-xs text-slate-400 text-center font-mono">Tel: 0555688855</div>
@@ -37,75 +37,72 @@
             </header>
 
             <main class="p-6 space-y-6">
-                <div id="view-dashboard" class="view-section space-y-6">
+                <div id="v-dashboard" class="sec space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border flex items-center justify-between"><div><p class="text-xs text-slate-500">إجمالي المحلات</p><h3 id="stat-clients" class="text-2xl font-bold mt-1">0</h3></div><span class="text-2xl">🏪</span></div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border flex items-center justify-between"><div><p class="text-xs text-slate-500">الوصولات المحفوظة</p><h3 id="stat-orders" class="text-2xl font-bold mt-1">0</h3></div><span class="text-2xl">🛒</span></div>
-                        <div class="bg-emerald-50 border-emerald-200 p-5 rounded-2xl shadow-sm border flex items-center justify-between"><div><p class="text-xs text-emerald-700 font-bold">إجمالي المبيعات</p><h3 id="stat-revenue" class="text-xl font-bold mt-1 text-emerald-700">0 DZD</h3></div><span class="text-2xl">💵</span></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border flex items-center justify-between"><div><p class="text-xs text-slate-500">المحلات</p><h3 id="sc" class="text-2xl font-bold mt-1">0</h3></div><span class="text-2xl">🏪</span></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border flex items-center justify-between"><div><p class="text-xs text-slate-500">الوصولات</p><h3 id="so" class="text-2xl font-bold mt-1">0</h3></div><span class="text-2xl">🛒</span></div>
+                        <div class="bg-emerald-50 border-emerald-200 p-5 rounded-2xl shadow-sm border flex items-center justify-between"><div><p class="text-xs text-emerald-700 font-bold">المبيعات</p><h3 id="sr" class="text-xl font-bold mt-1 text-emerald-700">0 DZD</h3></div><span class="text-2xl">💵</span></div>
                     </div>
                 </div>
 
-                <div id="view-clients" class="view-section space-y-4 hidden">
-                    <div class="flex justify-between items-center"><h3 class="text-xl font-bold">قائمة المحلات والموردين</h3><button onclick="openModal('client')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ إضافة محل</button></div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-xs uppercase"><th class="p-4">الاسم</th><th class="p-4">المسؤول</th><th class="p-4">الهاتف</th><th class="p-4">العنوان</th><th class="p-4 text-center">الإجراءات</th></tr></thead><tbody id="clients-table-body" class="divide-y text-sm"></tbody></table></div>
+                <div id="v-clients" class="sec space-y-4 hidden">
+                    <div class="flex justify-between items-center"><h3 class="text-xl font-bold">قائمة المحلات والموردين</h3><button onclick="om('client')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ إضافة محل</button></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-xs uppercase"><th class="p-4">الاسم</th><th class="p-4">المسؤول</th><th class="p-4">الهاتف</th><th class="p-4">العنوان</th><th class="p-4 text-center">الإجراءات</th></tr></thead><tbody id="tb-clients" class="divide-y text-sm"></tbody></table></div>
                 </div>
 
-                <div id="view-products" class="view-section space-y-4 hidden">
-                    <div class="flex justify-between items-center"><h3 class="text-xl font-bold">إدارة المنتجات والأسعار</h3><button onclick="openModal('product')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ إضافة منتج</button></div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-xs uppercase"><th class="p-4">المنتج</th><th class="p-4">سعر الشراء</th><th class="p-4">سعر البيع</th><th class="p-4 text-center">الإجراءات</th></tr></thead><tbody id="products-table-body" class="divide-y text-sm"></tbody></table></div>
+                <div id="v-products" class="sec space-y-4 hidden">
+                    <div class="flex justify-between items-center"><h3 class="text-xl font-bold">إدارة المنتجات والأسعار</h3><button onclick="om('product')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ إضافة منتج</button></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-xs uppercase"><th class="p-4">المنتج</th><th class="p-4">الشراء</th><th class="p-4">البيع</th><th class="p-4 text-center">الإجراءات</th></tr></thead><tbody id="tb-products" class="divide-y text-sm"></tbody></table></div>
                 </div>
 
-                <div id="view-stock" class="view-section space-y-4 hidden">
-                    <h3 class="text-xl font-bold">متابعة المخزون والتنبيهات (بالأحمر عند النقص)</h3>
-                    <div id="stock-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                <div id="v-stock" class="sec space-y-4 hidden">
+                    <h3 class="text-xl font-bold">متابعة المخزون والتنبيهات</h3>
+                    <div id="grid-stock" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
 
-                <div id="view-orders" class="view-section space-y-4 hidden">
+                <div id="v-orders" class="sec space-y-4 hidden">
                     <div class="flex justify-between items-center flex-wrap gap-3">
                         <h3 class="text-xl font-bold">سجل الوصولات</h3>
-                        <div class="flex gap-2"><input type="text" id="search-order-input" oninput="filterOrders()" placeholder="بحث..." class="border px-3 py-2 rounded-xl text-sm outline-none bg-white"><button onclick="openOrderModal()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ وصل جديد</button></div>
+                        <div class="flex gap-2"><input type="text" id="srch" oninput="fil()" placeholder="بحث..." class="border px-3 py-2 rounded-xl text-sm outline-none bg-white"><button onclick="oop()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ وصل جديد</button></div>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-xs uppercase"><th class="p-4">رقم الوصل</th><th class="p-4">التاريخ والوقت</th><th class="p-4">المحل</th><th class="p-4">السلع</th><th class="p-4">الإجمالي</th><th class="p-4 text-center">إجراءات</th></tr></thead><tbody id="orders-table-body" class="divide-y text-sm"></tbody></table></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b text-xs uppercase"><th class="p-4">الرقم</th><th class="p-4">التاريخ والوقت</th><th class="p-4">المحل</th><th class="p-4">السلع</th><th class="p-4">الإجمالي</th><th class="p-4 text-center">الإجراءات</th></tr></thead><tbody id="tb-orders" class="divide-y text-sm"></tbody></table></div>
                 </div>
             </main>
         </div>
     </div>
 
     <!-- Modals -->
-    <div id="modal-client" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+    <div id="m-client" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 id="client-modal-title" class="text-lg font-bold">إضافة محل / مورد</h3>
-            <input type="hidden" id="client-edit-id">
-            <input type="text" id="client-name" placeholder="اسم المحل" class="w-full border p-3 rounded-xl text-sm">
-            <input type="text" id="client-manager" placeholder="المسؤول" class="w-full border p-3 rounded-xl text-sm">
-            <input type="text" id="client-phone" placeholder="الهاتف" class="w-full border p-3 rounded-xl text-sm">
-            <input type="text" id="client-address" placeholder="العنوان" class="w-full border p-3 rounded-xl text-sm">
-            <div class="flex justify-end gap-2"><button onclick="closeModal('client')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="saveClient()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm">حفظ</button></div>
+            <h3 id="mt-client" class="text-lg font-bold">إضافة محل</h3>
+            <input type="text" id="c-name" placeholder="اسم المحل" class="w-full border p-3 rounded-xl text-sm">
+            <input type="text" id="c-mgr" placeholder="المسؤول" class="w-full border p-3 rounded-xl text-sm">
+            <input type="text" id="c-ph" placeholder="الهاتف" class="w-full border p-3 rounded-xl text-sm">
+            <input type="text" id="c-ad" placeholder="العنوان" class="w-full border p-3 rounded-xl text-sm">
+            <div class="flex justify-end gap-2"><button onclick="cm('client')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="svClient()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm">حفظ</button></div>
         </div>
     </div>
 
-    <div id="modal-product" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+    <div id="m-product" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 id="product-modal-title" class="text-lg font-bold">إضافة منتج</h3>
-            <input type="hidden" id="product-edit-id">
-            <input type="text" id="prod-name" placeholder="اسم المنتج" class="w-full border p-3 rounded-xl text-sm">
-            <input type="number" id="prod-purchase" placeholder="سعر الشراء" class="w-full border p-3 rounded-xl text-sm">
-            <input type="number" id="prod-sell" placeholder="سعر البيع" class="w-full border p-3 rounded-xl text-sm">
-            <div class="flex justify-end gap-2"><button onclick="closeModal('product')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="saveProduct()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm">حفظ</button></div>
+            <h3 id="mt-product" class="text-lg font-bold">إضافة منتج</h3>
+            <input type="text" id="p-name" placeholder="اسم المنتج" class="w-full border p-3 rounded-xl text-sm">
+            <input type="number" id="p-pur" placeholder="سعر الشراء" class="w-full border p-3 rounded-xl text-sm">
+            <input type="number" id="p-sel" placeholder="سعر البيع" class="w-full border p-3 rounded-xl text-sm">
+            <div class="flex justify-end gap-2"><button onclick="cm('product')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="svProduct()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm">حفظ</button></div>
         </div>
     </div>
 
-    <div id="modal-order" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+    <div id="m-order" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-bold">فتح وصل تسليم جديد</h3>
-            <input type="hidden" id="order-edit-id">
-            <select id="order-client" class="w-full border p-3 rounded-xl text-sm bg-white"><option value="">اختر المحل...</option></select>
+            <h3 class="text-lg font-bold">وصل تسليم جديد</h3>
+            <select id="o-client" class="w-full border p-3 rounded-xl text-sm bg-white"><option value="">اختر المحل...</option></select>
             <div class="border-t border-b py-3 space-y-3">
-                <div class="flex justify-between items-center"><span class="font-bold text-sm">السلع:</span><button onclick="addOrderItemRow()" class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs">+ إضافة سلعة جديدة</button></div>
-                <div id="order-items-container" class="space-y-2"></div>
+                <div class="flex justify-between items-center"><span class="font-bold text-sm">السلع:</span><button onclick="addRow()" class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs">+ إضافة سلعة</button></div>
+                <div id="o-rows" class="space-y-2"></div>
             </div>
-            <div class="flex justify-between items-center font-bold bg-amber-50 p-3 rounded-xl border"><span>المجموع:</span><span id="order-total-display" class="text-amber-700">0 DZD</span></div>
-            <div class="flex justify-end gap-2"><button onclick="closeModal('order')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="saveOrder(false)" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm">حفظ</button><button onclick="saveOrder(true)" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm">🖨️ حفظ وطباعة</button></div>
+            <div class="flex justify-between items-center font-bold bg-amber-50 p-3 rounded-xl border"><span>المجموع:</span><span id="o-tot" class="text-amber-700">0 DZD</span></div>
+            <div class="flex justify-end gap-2"><button onclick="cm('order')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="svOrder(false)" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm">حفظ</button><button onclick="svOrder(true)" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm">🖨️ طباعة</button></div>
         </div>
     </div>
 
@@ -123,164 +120,158 @@
             appId: "1:751442781351:web:a29eabdcb7526d3fc66782"
         }));
 
-        let clients = [], products = [], stock = [], orders = [];
-        let editingClientId = null, editingProductId = null, editingOrderId = null;
+        let cls = [], prds = [], stks = [], ords = [];
+        let eCID = null, ePID = null, eOID = null;
 
-        function getDateTime() {
-            const now = new Date();
-            return now.toISOString().split('T')[0] + ' ' + now.toTimeString().split(' ')[0];
+        function dt() {
+            const n = new Date();
+            return n.toISOString().split('T')[0] + ' ' + n.toTimeString().split(' ')[0];
         }
 
-        onSnapshot(collection(db, "clients"), (s) => { clients = s.docs.map(d => ({ id: d.id, ...d.data() })); renderClients(); renderDashboard(); populateSelect(); });
-        onSnapshot(collection(db, "products"), (s) => { products = s.docs.map(d => ({ id: d.id, ...d.data() })); renderProducts(); });
-        onSnapshot(collection(db, "stock"), (s) => { stock = s.docs.map(d => ({ id: d.id, ...d.data() })); renderStock(); });
-        onSnapshot(collection(db, "orders"), (s) => { orders = s.docs.map(d => ({ id: d.id, ...d.data() })); renderOrders(); renderDashboard(); });
+        onSnapshot(collection(db, "clients"), s => { cls = s.docs.map(d => ({ id: d.id, ...d.data() })); rCls(); rDash(); popSel(); });
+        onSnapshot(collection(db, "products"), s => { prds = s.docs.map(d => ({ id: d.id, ...d.data() })); rPrds(); });
+        onSnapshot(collection(db, "stock"), s => { stks = s.docs.map(d => ({ id: d.id, ...d.data() })); rStk(); });
+        onSnapshot(collection(db, "orders"), s => { ords = s.docs.map(d => ({ id: d.id, ...d.data() })); rOrds(); rDash(); });
 
-        window.switchTab = function(id) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById('view-' + id).classList.remove('hidden');
+        window.st = function(id) {
+            document.querySelectorAll('.sec').forEach(el => el.classList.add('hidden'));
+            document.getElementById('v-' + id).classList.remove('hidden');
             document.querySelectorAll('aside nav button').forEach(b => b.className = "w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-300 hover:bg-slate-800");
             document.getElementById('nav-' + id).className = "w-full text-left px-4 py-2.5 rounded-xl font-medium bg-amber-600 text-white";
         };
 
-        window.openModal = function(name) { document.getElementById('modal-' + name).classList.remove('hidden'); document.getElementById('modal-' + name).classList.add('flex'); };
-        window.closeModal = function(name) {
-            document.getElementById('modal-' + name).classList.remove('flex'); document.getElementById('modal-' + name).classList.add('hidden');
-            if(name==='client') { editingClientId=null; ['client-name','client-manager','client-phone','client-address'].forEach(i=>document.getElementById(i).value=''); }
-            if(name==='product') { editingProductId=null; ['prod-name','prod-purchase','prod-sell'].forEach(i=>document.getElementById(i).value=''); }
-            if(name==='order') { editingOrderId=null; document.getElementById('order-items-container').innerHTML=''; }
+        window.om = function(n) { document.getElementById('m-' + n).classList.remove('hidden'); document.getElementById('m-' + n).classList.add('flex'); };
+        window.cm = function(n) {
+            document.getElementById('m-' + n).classList.remove('flex'); document.getElementById('m-' + n).classList.add('hidden');
+            if(n==='client') { eCID=null; ['c-name','c-mgr','c-ph','c-ad'].forEach(i=>document.getElementById(i).value=''); }
+            if(n==='product') { ePID=null; ['p-name','p-pur','p-sel'].forEach(i=>document.getElementById(i).value=''); }
+            if(n==='order') { eOID=null; document.getElementById('o-rows').innerHTML=''; }
         };
 
-        window.openOrderModal = function() {
-            editingOrderId = null;
-            document.getElementById('order-items-container').innerHTML = '';
-            window.addOrderItemRow();
-            window.openModal('order');
-        };
+        window.oop = function() { eOID=null; document.getElementById('o-rows').innerHTML=''; addRow(); om('order'); };
 
-        function populateSelectov() { populateSelect(); }
-        function populateSelect() {
-            const oc = document.getElementById('order-client');
-            if(oc) oc.innerHTML = '<option value="">اختر المحل...</option>' + clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        function popSel() {
+            const oc = document.getElementById('o-client');
+            if(oc) oc.innerHTML = '<option value="">اختر المحل...</option>' + cls.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
         }
 
-        function renderDashboard() {
-            if(document.getElementById('stat-clients')) document.getElementById('stat-clients').innerText = clients.length;
-            if(document.getElementById('stat-orders')) document.getElementById('stat-orders').innerText = orders.length;
-            if(document.getElementById('stat-revenue')) document.getElementById('stat-revenue').innerText = orders.reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0) + ' DZD';
+        function rDash() {
+            if(document.getElementById('sc')) document.getElementById('sc').innerText = cls.length;
+            if(document.getElementById('so')) document.getElementById('so').innerText = ords.length;
+            if(document.getElementById('sr')) document.getElementById('sr').innerText = ords.reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0) + ' DZD';
         }
 
-        window.renderClients = function() {
-            const tb = document.getElementById('clients-table-body');
-            if(tb) tb.innerHTML = clients.map(c => `<tr><td class="p-4 font-semibold">${c.name||''}</td><td class="p-4">${c.manager||''}</td><td class="p-4 font-mono">${c.phone||''}</td><td class="p-4">${c.address||''}</td><td class="p-4 text-center space-x-2"><button onclick="editClient('${c.id}','${c.name||''}','${c.manager||''}','${c.phone||''}','${c.address||''}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold">✏️ تعديل</button><button onclick="deleteClient('${c.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🗑️ حذف</button></td></tr>`).join('');
-        };
+        function rCls() {
+            const tb = document.getElementById('tb-clients');
+            if(tb) tb.innerHTML = cls.map(c => `<tr><td class="p-4 font-semibold">${c.name||''}</td><td class="p-4">${c.mgr||''}</td><td class="p-4 font-mono">${c.ph||''}</td><td class="p-4">${c.ad||''}</td><td class="p-4 text-center space-x-2"><button onclick="edCl('${c.id}','${c.name||''}','${c.mgr||''}','${c.ph||''}','${c.ad||''}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold">✏️ تعديل</button><button onclick="delCl('${c.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🗑️ حذف</button></td></tr>`).join('');
+        }
 
-        window.renderProducts = function() {
-            const tb = document.getElementById('products-table-body');
-            if(tb) tb.innerHTML = products.map(p => `<tr><td class="p-4 font-semibold">${p.name||''}</td><td class="p-4 font-mono">${p.purchasePrice||0} DZD</td><td class="p-4 text-emerald-600 font-bold font-mono">${p.sellPrice||0} DZD</td><td class="p-4 text-center space-x-2"><button onclick="editProduct('${p.id}','${p.name||''}','${p.purchasePrice||0}','${p.sellPrice||0}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold">✏️ تعديل</button><button onclick="deleteProduct('${p.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🗑️ حذف</button></td></tr>`).join('');
-        };
+        function rPrds() {
+            const tb = document.getElementById('tb-products');
+            if(tb) tb.innerHTML = prds.map(p => `<tr><td class="p-4 font-semibold">${p.name||''}</td><td class="p-4 font-mono">${p.pur||0} DZD</td><td class="p-4 text-emerald-600 font-bold font-mono">${p.sel||0} DZD</td><td class="p-4 text-center space-x-2"><button onclick="edPr('${p.id}','${p.name||''}','${p.pur||0}','${p.sel||0}')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold">✏️ تعديل</button><button onclick="delPr('${p.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🗑️ حذف</button></td></tr>`).join('');
+        }
 
-        window.renderStock = function() {
-            const g = document.getElementById('stock-grid');
-            if(g) g.innerHTML = stock.map(s => {
-                let alert = Number(s.quantity || 0) <= Number(s.alertLimit || 10);
-                return `<div class="${alert ? 'bg-red-50 border-2 border-red-500 animate-pulse' : 'bg-white border'} p-6 rounded-2xl shadow-sm space-y-3"><div class="flex justify-between"><h4 class="font-bold text-lg">${s.name}</h4><span class="text-xs text-slate-400">${s.updatedAt||''}</span></div><div><p class="text-xs text-slate-500 mb-1">الكمية:</p><input type="number" value="${s.quantity||0}" onchange="updateStock('${s.id}',this.value,${s.alertLimit||10})" class="w-full border-2 p-2 rounded-xl text-xl font-bold text-amber-600 bg-white"></div><div><p class="text-xs text-slate-500 mb-1">رقم التنبيه:</p><input type="number" value="${s.alertLimit||10}" onchange="updateLimit('${s.id}',this.value,${s.quantity||0})" class="w-full border p-2 rounded-lg text-xs font-bold text-red-600 bg-white"></div>${alert?'<div class="bg-red-600 text-white text-xs p-2 rounded-lg font-bold text-center">⚠️ تنبيه: نقص في السلعة!</div>':''}</div>`;
+        function rStk() {
+            const g = document.getElementById('grid-stock');
+            if(g) g.innerHTML = stks.map(s => {
+                let al = Number(s.qty || 0) <= Number(s.lim || 10);
+                return `<div class="${al ? 'bg-red-50 border-2 border-red-500 animate-pulse' : 'bg-white border'} p-6 rounded-2xl shadow-sm space-y-3"><div class="flex justify-between"><h4 class="font-bold text-lg">${s.name}</h4><span class="text-xs text-slate-400">${s.up||''}</span></div><div><p class="text-xs text-slate-500 mb-1">الكمية:</p><input type="number" value="${s.qty||0}" onchange="upSt('${s.id}',this.value,${s.lim||10})" class="w-full border-2 p-2 rounded-xl text-xl font-bold text-amber-600 bg-white"></div><div><p class="text-xs text-slate-500 mb-1">رقم التنبيه:</p><input type="number" value="${s.lim||10}" onchange="upLm('${s.id}',this.value,${s.qty||0})" class="w-full border p-2 rounded-lg text-xs font-bold text-red-600 bg-white"></div>${al?'<div class="bg-red-600 text-white text-xs p-2 rounded-lg font-bold text-center">⚠️ تنبيه: نقص في السلعة!</div>':''}</div>`;
             }).join('');
+        }
+
+        window.rOrds = function(list = ords) {
+            const tb = document.getElementById('tb-orders');
+            if(tb) tb.innerHTML = [...list].sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)).map(o => `<tr><td class="p-4 font-mono font-bold text-amber-600">#BL-${o.did||''}</td><td class="p-4 text-xs font-mono">${o.createdAt||''}</td><td class="p-4 font-semibold">${o.clientName||''}</td><td class="p-4 text-xs space-y-1">${(o.items||[]).map(i=>`▪️ ${i.prod} (كمية: ${i.qty} - ${i.pr} DZD)`).join('')}</td><td class="p-4 text-emerald-600 font-bold">${o.totalPrice||0} DZD</td><td class="p-4 text-center space-x-2"><button onclick='prn(${JSON.stringify(o)})' class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🖨️ طباعة</button><button onclick="edOr('${o.id}')" class="bg-amber-50 text-amber-600 px-3 py-1.5 rounded-lg text-xs font-semibold">✏️ تعديل</button><button onclick="delOr('${o.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🗑️ حذف</button></td></tr>`).join('');
         };
 
-        window.renderOrders = function(list = orders) {
-            const tb = document.getElementById('orders-table-body');
-            if(tb) tb.innerHTML = [...list].sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)).map(o => `<tr><td class="p-4 font-mono font-bold text-amber-600">#BL-${o.displayId||''}</td><td class="p-4 text-xs font-mono">${o.createdAt||''}</td><td class="p-4 font-semibold">${o.clientName||''}</td><td class="p-4 text-xs space-y-1">${(o.items||[]).map(i=>`▪️ ${i.product} (كمية: ${i.qty} - ${i.price} DZD)`).join('')}</td><td class="p-4 text-emerald-600 font-bold">${o.totalPrice||0} DZD</td><td class="p-4 text-center space-x-2"><button onclick='printInvoice(${JSON.stringify(o)})' class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🖨️ طباعة</button><button onclick="editOrder('${o.id}')" class="bg-amber-50 text-amber-600 px-3 py-1.5 rounded-lg text-xs font-semibold">✏️ تعديل</button><button onclick="deleteOrder('${o.id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">🗑️ حذف</button></td></tr>`).join('');
-        };
-
-        window.saveClient = async function() {
-            let name = document.getElementById('client-name').value;
+        window.svClient = async function() {
+            let name = document.getElementById('c-name').value;
             if(!name) return;
-            let d = { name, manager: document.getElementById('client-manager').value, phone: document.getElementById('client-phone').value, address: document.getElementById('client-address').value };
-            if(editingClientId) { await updateDoc(doc(db,"clients",editingClientId),d); editingClientId=null; } else { await addDoc(collection(db,"clients"),d); }
-            window.closeModal('client');
+            let d = { name, mgr: document.getElementById('c-mgr').value, ph: document.getElementById('c-ph').value, ad: document.getElementById('c-ad').value };
+            if(eCID) { await updateDoc(doc(db,"clients",eCID),d); eCID=null; } else { await addDoc(collection(db,"clients"),d); }
+            cm('client');
         };
-        window.editClient = function(id,n,m,p,a) { editingClientId=id; window.openModal('client'); document.getElementById('client-modal-title').innerText="تعديل المحل"; document.getElementById('client-name').value=n; document.getElementById('client-manager').value=m; document.getElementById('client-phone').value=p; document.getElementById('client-address').value=a; };
-        window.deleteClient = async function(id) { if(confirm('حذف؟')) await deleteDoc(doc(db,"clients",id)); };
+        window.edCl = function(id,n,m,p,a) { eCID=id; om('client'); document.getElementById('mt-client').innerText="تعديل المحل"; document.getElementById('c-name').value=n; document.getElementById('c-mgr').value=m; document.getElementById('c-ph').value=p; document.getElementById('c-ad').value=a; };
+        window.delCl = async function(id) { if(confirm('حذف؟')) await deleteDoc(doc(db,"clients",id)); };
 
-        window.saveProduct = async function() {
-            let name = document.getElementById('prod-name').value;
-            let sellPrice = Number(document.getElementById('prod-sell').value);
-            let purchasePrice = Number(document.getElementById('prod-purchase').value);
+        window.svProduct = async function() {
+            let name = document.getElementById('p-name').value;
+            let pur = Number(document.getElementById('p-pur').value);
+            let sel = Number(document.getElementById('p-sel').value);
             if(!name) return;
-            let d = { name, purchasePrice, sellPrice };
-            if(editingProductId) { await updateDoc(doc(db,"products",editingProductId),d); editingProductId=null; } else { await addDoc(collection(db,"products"),d); await addDoc(collection(db,"stock"),{name,quantity:0,alertLimit:10,updatedAt:getDateTime()}); }
-            window.closeModal('product');
+            let d = { name, pur, sel };
+            if(ePID) { await updateDoc(doc(db,"products",ePID),d); ePID=null; } else { await addDoc(collection(db,"products"),d); await addDoc(collection(db,"stock"),{name,qty:0,lim:10,up:dt()}); }
+            cm('product');
         };
-        window.editProduct = function(id,n,p,s) { editingProductId=id; window.openModal('product'); document.getElementById('product-modal-title').innerText="تعديل المنتج"; document.getElementById('prod-name').value=n; document.getElementById('prod-purchase').value=p; document.getElementById('prod-sell').value=s; };
-        window.deleteProduct = async function(id) { if(confirm('حذف؟')) await deleteDoc(doc(db,"products",id)); };
+        window.edPr = function(id,n,p,s) { ePID=id; om('product'); document.getElementById('mt-product').innerText="تعديل المنتج"; document.getElementById('p-name').value=n; document.getElementById('p-pur').value=p; document.getElementById('p-sel').value=s; };
+        window.delPr = async function(id) { if(confirm('حذف؟')) await deleteDoc(doc(db,"products",id)); };
 
-        window.updateStock = async function(id,qty,limit) { await updateDoc(doc(db,"stock",id),{quantity:Number(qty),alertLimit:Number(limit),updatedAt:getDateTime()}); };
-        window.updateLimit = async function(id,limit,qty) { await updateDoc(doc(db,"stock",id),{alertLimit:Number(limit),quantity:Number(qty),updatedAt:getDateTime()}); };
+        window.upSt = async function(id,q,l) { await updateDoc(doc(db,"stock",id),{qty:Number(q),lim:Number(l),up:dt()}); };
+        window.upLm = async function(id,l,q) { await updateDoc(doc(db,"stock",id),{lim:Number(l),qty:Number(q),up:dt()}); };
 
-        window.addOrderItemRow = function(pName="", qty="", pr="") {
-            let c = document.getElementById('order-items-container');
+        window.addRow = function(pName="", qty="", pr="") {
+            let c = document.getElementById('o-rows');
             if(!c) return;
-            let opts = '<option value="">اختر السلعة...</option>' + products.map(p=>`<option value="${p.name}" data-price="${p.sellPrice}" ${p.name===pName?'selected':''}>${p.name}</option>`).join('');
+            let opts = '<option value="">اختر السلعة...</option>' + prds.map(p=>`<option value="${p.name}" data-price="${p.sel}" ${p.name===pName?'selected':''}>${p.name}</option>`).join('');
             let r = document.createElement('div');
-            r.className = "flex gap-2 items-center bg-slate-50 p-3 rounded-xl border order-item-row";
-            r.innerHTML = `<select class="border p-2 rounded-lg text-xs flex-1 bg-white item-select" onchange="updateRowPrice(this)">${opts}</select><input type="number" placeholder="الكمية" value="${qty}" class="border p-2 rounded-lg text-xs w-20 item-qty" oninput="calcTotal()"><input type="number" placeholder="السعر" value="${pr}" class="border p-2 rounded-lg text-xs w-24 bg-slate-100 item-price" oninput="calcTotal()"><button onclick="this.parentElement.remove();calcTotal();" class="text-red-600 font-bold px-2">✕</button>`;
+            r.className = "flex gap-2 items-center bg-slate-50 p-3 rounded-xl border orow";
+            r.innerHTML = `<select class="border p-2 rounded-lg text-xs flex-1 bg-white osel" onchange="upPr(this)">${opts}</select><input type="number" placeholder="الكمية" value="${qty}" class="border p-2 rounded-lg text-xs w-20 oqty" oninput="calc()"><input type="number" placeholder="السعر" value="${pr}" class="border p-2 rounded-lg text-xs w-24 bg-slate-100 opr" oninput="calc()"><button onclick="this.parentElement.remove();calc();" class="text-red-600 font-bold px-2">✕</button>`;
             c.appendChild(r);
-            window.calcTotal();
+            calc();
         };
 
-        window.updateRowPrice = function(sel) {
-            let row = sel.closest('.order-item-row');
-            row.querySelector('.item-price').value = sel.selectedOptions[0].getAttribute('data-price') || 0;
-            window.calcTotal();
+        window.upPr = function(sel) {
+            let row = sel.closest('.orow');
+            row.querySelector('.opr').value = sel.selectedOptions[0].getAttribute('data-price') || 0;
+            calc();
         };
 
-        window.calcTotal = function() {
+        window.calc = function() {
             let t = 0;
-            document.querySelectorAll('.order-item-row').forEach(r => {
-                t += (Number(r.querySelector('.item-qty').value)||0) * (Number(r.querySelector('.item-price').value)||0);
+            document.querySelectorAll('.orow').forEach(r => {
+                t += (Number(r.querySelector('.oqty').value)||0) * (Number(r.querySelector('.opr').value)||0);
             });
-            if(document.getElementById('order-total-display')) document.getElementById('order-total-display').innerText = t + ' DZD';
+            if(document.getElementById('o-tot')) document.getElementById('o-tot').innerText = t + ' DZD';
         };
 
-        window.saveOrder = async function(print) {
-            let clientName = document.getElementById('order-client').value;
+        window.svOrder = async function(print) {
+            let clientName = document.getElementById('o-client').value;
             if(!clientName) return alert('اختر المحل!');
             let items = [];
-            document.querySelectorAll('.order-item-row').forEach(r => {
-                let product = r.querySelector('.item-select').value;
-                let qty = Number(r.querySelector('.item-qty').value);
-                let price = Number(r.querySelector('.item-price').value);
-                if(product && qty>0) items.push({product,qty,price});
+            document.querySelectorAll('.orow').forEach(r => {
+                let prod = r.querySelector('.osel').value;
+                let qty = Number(r.querySelector('.oqty').value);
+                let pr = Number(r.querySelector('.opr').value);
+                if(prod && qty>0) items.push({prod,qty,pr});
             });
-            if(items.length===0) return alert('أضف سلعة واحدة على الأقل!');
-            let totalPrice = items.reduce((sum,i)=>sum+(i.qty*i.price),0);
-            let displayId = editingOrderId ? orders.find(o=>o.id===editingOrderId).displayId : Math.floor(100 + Math.random()*900);
-            let data = { displayId, clientName, items, totalPrice, createdAt: getDateTime() };
-            if(editingOrderId) { await updateDoc(doc(db,"orders",editingOrderId),data); editingOrderId=null; } else { await addDoc(collection(db,"orders"),data); }
-            window.closeModal('order');
-            if(print) window.printInvoice({displayId,...data});
+            if(items.length===0) return alert('أضف سلعة واحدة!');
+            let totalPrice = items.reduce((sum,i)=>sum+(i.qty*i.pr),0);
+            let did = eOID ? ords.find(o=>o.id===eOID).did : Math.floor(100 + Math.random()*900);
+            let data = { did, clientName, items, totalPrice, createdAt: dt() };
+            if(eOID) { await updateDoc(doc(db,"orders",eOID),data); eOID=null; } else { await addDoc(collection(db,"orders"),data); }
+            cm('order');
+            if(print) prn({did,...data});
         };
 
-        window.editOrder = function(id) {
-            let o = orders.find(x=>x.id===id);
+        window.edOr = function(id) {
+            let o = ords.find(x=>x.id===id);
             if(!o) return;
-            editingOrderId = id;
-            window.openModal('order');
-            document.getElementById('order-client').value = o.clientName;
-            document.getElementById('order-items-container').innerHTML = '';
-            (o.items||[]).forEach(i=>window.addOrderItemRow(i.product,i.qty,i.price));
+            eOID = id;
+            om('order');
+            document.getElementById('o-client').value = o.clientName;
+            document.getElementById('o-rows').innerHTML = '';
+            (o.items||[]).forEach(i=>addRow(i.prod,i.qty,i.pr));
         };
 
-        window.deleteOrder = async function(id) { if(confirm('حذف؟')) await deleteDoc(doc(db,"orders",id)); };
-        window.filterOrders = function() {
-            let q = document.getElementById('search-order-input').value.toLowerCase();
-            window.renderOrders(orders.filter(o=>(o.createdAt||'').toLowerCase().includes(q)||(o.clientName||'').toLowerCase().includes(q)));
+        window.delOr = async function(id) { if(confirm('حذف؟')) await deleteDoc(doc(db,"orders",id)); };
+        window.fil = function() {
+            let q = document.getElementById('srch').value.toLowerCase();
+            rOrds(ords.filter(o=>(o.createdAt||'').toLowerCase().includes(q)||(o.clientName||'').toLowerCase().includes(q)));
         };
 
-        window.printInvoice = function(o) {
+        window.prn = function(o) {
             let pw = window.open('','_blank','width=800,height=600');
-            pw.document.write(`<html dir="rtl"><head><meta charset="UTF-8"><title>وصل #${o.displayId||''}</title><style>body{font-family:Tahoma;padding:30px}.header{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:20px}.title{font-size:24px;font-weight:bold}.phone{color:#d97706;font-weight:bold;margin-top:5px}.box{display:flex;justify-content:space-between;font-weight:bold;margin-bottom:15px;background:#f8fafc;padding:10px;border:1px solid #ddd}table{width:100%;border-collapse:collapse;margin-top:15px}th,td{border:1px solid #aaa;padding:10px;text-align:center}th{background:#f1f5f9}.total{text-align:left;font-weight:bold;font-size:16px;margin-top:15px}.footer{margin-top:50px;font-weight:bold}</style></head><body><div class="header"><div class="title">oeuf caille</div><div>وصل تسليم بضاعة</div><div class="phone">📞 الهاتف: 0555688855</div></div><div class="box"><div>رقم: #${o.displayId||''}</div><div>التاريخ والوقت: ${o.createdAt||''}</div><div>المحل: ${o.clientName||''}</div></div><table><thead><tr><th>السلعة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${(o.items||[]).map(i=>`<tr><td><b>${i.product}</b></td><td><b>${i.qty}</b></td><td><b>${i.price} DZD</b></td><td><b>${i.qty*i.price} DZD</b></td></tr>`).join('')}</tbody></table><div class="total">المبلغ الإجمالي: ${o.totalPrice||0} DZD</div><div class="footer">توقيع واستلام المحل:</div><script>window.onload=()=>window.print();</script></body></html>`);
+            pw.document.write(`<html dir="rtl"><head><meta charset="UTF-8"><title>وصل #${o.did||''}</title><style>body{font-family:Tahoma;padding:30px}.header{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:20px}.title{font-size:24px;font-weight:bold}.phone{color:#d97706;font-weight:bold;margin-top:5px}.box{display:flex;justify-content:space-between;font-weight:bold;margin-bottom:15px;background:#f8fafc;padding:10px;border:1px solid #ddd}table{width:100%;border-collapse:collapse;margin-top:15px}th,td{border:1px solid #aaa;padding:10px;text-align:center}th{background:#f1f5f9}.total{text-align:left;font-weight:bold;font-size:16px;margin-top:15px}.footer{margin-top:50px;font-weight:bold}</style></head><body><div class="header"><div class="title">oeuf caille</div><div>وصل تسليم بضاعة</div><div class="phone">📞 الهاتف: 0555688855</div></div><div class="box"><div>رقم: #${o.did||''}</div><div>التاريخ والوقت: ${o.createdAt||''}</div><div>المحل: ${o.clientName||''}</div></div><table><thead><tr><th>السلعة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${(o.items||[]).map(i=>`<tr><td><b>${i.prod}</b></td><td><b>${i.qty}</b></td><td><b>${i.pr} DZD</b></td><td><b>${i.qty*i.pr} DZD</b></td></tr>`).join('')}</tbody></table><div class="total">المبلغ الإجمالي: ${o.totalPrice||0} DZD</div><div class="footer">توقيع واستلام المحل:</div><script>window.onload=()=>window.print();</script></body></html>`);
             pw.document.close();
         };
     </script>
