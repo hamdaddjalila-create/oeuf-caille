@@ -3,22 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oeuf Caille</title>
+    <title>Oeuf Caille - Gestion</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="bg-slate-100 text-slate-800 flex h-screen">
-    <aside class="w-64 bg-slate-900 text-white p-6 flex flex-col justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-amber-400 mb-6">🥚 Oeuf Caille</h1>
-            <nav class="space-y-2">
-                <button onclick="location.reload()" class="w-full text-left px-4 py-2 bg-amber-600 rounded-xl">🔄 تحديث الصفحة</button>
-            </nav>
+<body class="bg-slate-100 text-slate-800">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-slate-900 text-white flex flex-col justify-between">
+            <div>
+                <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                    <span class="text-3xl">🥚</span>
+                    <div>
+                        <h1 class="text-sm font-bold text-amber-400">Oeuf Caille</h1>
+                        <p class="text-[11px] text-slate-400">Cloud Firebase Pro ☁️</p>
+                    </div>
+                </div>
+                <nav class="p-4 space-y-2">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition bg-amber-600 text-white">📊 لوحة التحكم</button>
+                    <button onclick="switchTab('clients')" id="nav-clients" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition text-slate-300 hover:bg-slate-800">🏪 قائمة المحلات</button>
+                    <button onclick="switchTab('products')" id="nav-products" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition text-slate-300 hover:bg-slate-800">🏷️ المنتجات والأسعار</button>
+                    <button onclick="switchTab('stock')" id="nav-stock" class="w-full text-left px-4 py-2.5 rounded-xl font-medium transition text-slate-300 hover:bg-slate-800">📦 المخزون</button>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-800 text-xs text-slate-400 text-center">Tel: 0555688855 📞</div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-y-auto">
+            <header class="bg-white shadow-sm border-b h-16 flex items-center justify-between px-6">
+                <h2 id="page-title" class="text-lg font-bold text-slate-700">لوحة التحكم العامة</h2>
+                <span class="bg-amber-50 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold border border-amber-200">📞 0555688855</span>
+            </header>
+
+            <main class="p-6 space-y-6">
+                <!-- Dashboard View -->
+                <div id="view-dashboard" class="view-section space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border flex items-center justify-between">
+                            <div><p class="text-xs text-slate-500">إجمالي المحلات</p><h3 id="stat-clients" class="text-3xl font-bold mt-1">0</h3></div>
+                            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl">🏪</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border flex items-center justify-between">
+                            <div><p class="text-xs text-slate-500">إجمالي المنتجات</p><h3 id="stat-products" class="text-3xl font-bold mt-1">0</h3></div>
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">🏷️</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clients View -->
+                <div id="view-clients" class="view-section space-y-4 hidden">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">قائمة المحلات التجارية</h3>
+                        <button onclick="openModal('client')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ إضافة محل</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase"><th class="p-4">اسم المحل</th><th class="p-4">الهاتف</th><th class="p-4 text-center">إجراءات</th></tr></thead>
+                            <tbody id="clients-table-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Products View -->
+                <div id="view-products" class="view-section space-y-4 hidden">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">المنتجات والأسعار</h3>
+                        <button onclick="openModal('product')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ إضافة منتج</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-slate-600 text-xs uppercase"><th class="p-4">اسم المنتج</th><th class="p-4">سعر البيع</th><th class="p-4 text-center">إجراءات</th></tr></thead>
+                            <tbody id="products-table-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Stock View -->
+                <div id="view-stock" class="view-section space-y-4 hidden">
+                    <h3 class="text-xl font-bold">متابعة المخزون</h3>
+                    <div id="stock-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                </div>
+            </main>
         </div>
-        <div class="text-xs text-slate-400">0555688855</div>
-    </aside>
-    <main class="flex-1 p-8">
-        <h2 class="text-2xl font-bold mb-4">لوحة التحكم قيد التشغيل بنجاح</h2>
-        <p class="text-slate-600">التطبيق متصل بقاعدة بيانات Firebase وجاهز للعمل.</p>
-    </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-client" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold">إضافة محل جديد</h3>
+            <input type="text" id="client-name" placeholder="اسم المحل" class="w-full border p-3 rounded-xl text-sm">
+            <input type="text" id="client-phone" placeholder="الهاتف" class="w-full border p-3 rounded-xl text-sm">
+            <div class="flex justify-end gap-2"><button onclick="closeModal('client')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="saveClient()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm">حفظ</button></div>
+        </div>
+    </div>
+
+    <div id="modal-product" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold">إضافة منتج جديد</h3>
+            <input type="text" id="prod-name" placeholder="اسم المنتج" class="w-full border p-3 rounded-xl text-sm">
+            <input type="number" id="prod-sell" placeholder="سعر البيع" class="w-full border p-3 rounded-xl text-sm">
+            <div class="flex justify-end gap-2"><button onclick="closeModal('product')" class="bg-slate-200 px-4 py-2 rounded-xl text-sm">إلغاء</button><button onclick="saveProduct()" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm">حفظ</button></div>
+        </div>
+    </div>
+
+    <!-- Firebase & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCEfDhz8qD6dRCJ2WJZaZVENPxY0GjCrk",
+            authDomain: "oeufcailleapp.firebaseapp.com",
+            projectId: "oeufcailleapp",
+            storageBucket: "oeufcailleapp.firebasestorage.app",
+            messagingSenderId: "751442781351",
+            appId: "1:751442781351:web:a29eabdcb7526d3fc66782"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let clients = [], products = [], stock = [];
+
+        onSnapshot(collection(db, "clients"), (snap) => {
+            clients = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderClients(); renderDashboard();
+        });
+
+        onSnapshot(collection(db, "products"), (snap) => {
+            products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderProducts(); renderDashboard();
+        });
+
+        onSnapshot(collection(db, "stock"), (snap) => {
+            stock = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderStock();
+        });
+
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + tabId).classList.remove('hidden');
+            document.querySelectorAll('aside nav button').forEach(btn => btn.className = "w-full text-left px-4 py-2.5 rounded-xl font-medium transition text-slate-300 hover:bg-slate-800");
+            document.getElementById('nav-' + tabId).className = "w-full text-left px-4 py-2.5 rounded-xl font-medium transition bg-amber-600 text-white";
+        }
+
+        window.openModal = function(name) { document.getElementById('modal-' + name).classList.remove('hidden'); document.getElementById('modal-' + name).classList.add('flex'); }
+        window.closeModal = function(name) { document.getElementById('modal-' + name).classList.remove('flex'); document.getElementById('modal-' + name).classList.add('hidden'); }
+
+        function renderDashboard() {
+            document.getElementById('stat-clients').innerText = clients.length;
+            document.getElementById('stat-products').innerText = products.length;
+        }
+
+        function renderClients() {
+            document.getElementById('clients-table-body').innerHTML = clients.map(c => `
+                <tr><td class="p-4 font-semibold">${c.name || ''}</td><td class="p-4 text-slate-600">${c.phone || ''}</td><td class="p-4 text-center"><button onclick="deleteClient('${c.id}')" class="text-red-600">🗑️ حذف</button></td></tr>
+            `).join('');
+        }
+
+        function renderProducts() {
+            document.getElementById('products-table-body').innerHTML = products.map(p => `
+                <tr><td class="p-4 font-semibold">${p.name || ''}</td><td class="p-4 text-emerald-600 font-bold">${p.sellPrice || 0} DZD</td><td class="p-4 text-center"><button onclick="deleteProduct('${p.id}')" class="text-red-600">🗑️ حذف</button></td></tr>
+            `).join('');
+        }
+
+        function renderStock() {
+            document.getElementById('stock-grid').innerHTML = stock.map(s => `
+                <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-2">
+                    <h4 class="font-bold text-lg">${s.name}</h4>
+                    <p class="text-xs text-slate-500">الكمية: <span class="font-bold text-amber-600 text-lg">${s.quantity || 0}</span></p>
+                </div>
+            `).join('');
+        }
+
+        window.saveClient = async function() {
+            let name = document.getElementById('client-name').value;
+            if(!name) return;
+            await addDoc(collection(db, "clients"), { name, phone: document.getElementById('client-phone').value });
+            window.closeModal('client');
+        }
+
+        window.saveProduct = async function() {
+            let name = document.getElementById('prod-name').value;
+            let sellPrice = Number(document.getElementById('prod-sell').value);
+            if(!name) return;
+            await addDoc(collection(db, "products"), { name, sellPrice });
+            await addDoc(collection(db, "stock"), { name, quantity: 0 });
+            window.closeModal('product');
+        }
+
+        window.deleteClient = async function(id) { if(confirm('حذف؟')) await deleteDoc(doc(db, "clients", id)); }
+        window.deleteProduct = async function(id) { if(confirm('حذف؟')) await deleteDoc(doc(db, "products", id)); }
+    </script>
 </body>
 </html>
